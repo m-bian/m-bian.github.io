@@ -1,0 +1,385 @@
+/* ============================================================
+   Mingyang Bian — personal academic site (shared stylesheet)
+   Self-hosted: system fonts only, no external requests.
+   Palette: ink on paper, with a cinnabar-seal accent — a nod to
+   the vermilion ruling lines (朱丝栏) of Chinese manuscript paper.
+   ============================================================ */
+
+:root {
+  --paper:     #FBFAF7;
+  --ink:       #221F1C;
+  --ink-soft:  #5C564E;
+  --seal:      #9C3425;  /* links — dark cinnabar, AA on paper */
+  --vermilion: #C8472F;  /* decorative marks and rules */
+  --hairline:  #E4DFD6;
+
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style",
+           "Palatino Linotype", Palatino, Georgia,
+           "Songti SC", SimSun, "Noto Serif CJK SC", serif;
+  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+           "Helvetica Neue", Arial,
+           "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:     #191715;
+    --ink:       #E9E4DC;
+    --ink-soft:  #A39B8F;
+    --seal:      #E2826D;
+    --vermilion: #D05A40;
+    --hairline:  #332F2A;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;          /* 17px */
+  line-height: 1.7;
+  border-top: 3px solid var(--vermilion);
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+::selection {
+  background: var(--vermilion);
+  color: #FBFAF7;
+}
+
+/* ---------- links ---------- */
+
+a {
+  color: var(--seal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: color-mix(in srgb, var(--seal) 45%, transparent);
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--seal);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- skip link ---------- */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--paper);
+  padding: 0.5rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 10;
+}
+
+/* ---------- header ---------- */
+
+header {
+  padding-top: 4.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.portrait {
+  margin: 0 0 1.75rem;
+}
+
+.portrait img {
+  width: 7.5rem;
+  height: 7.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  display: block;
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 2.625rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1 a:hover {
+  color: var(--seal);
+}
+
+h1 .zh-name {
+  font-weight: 400;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- nav ---------- */
+
+nav {
+  margin-top: 2.25rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+}
+
+nav a {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+}
+
+nav a:hover {
+  color: var(--seal);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+nav a[aria-current="page"] {
+  color: var(--seal);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+/* ---------- sections ---------- */
+
+section {
+  margin-top: 3.5rem;
+  scroll-margin-top: 1.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin: 0 0 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* cinnabar seal-mark before each section title */
+h2::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 1px;
+  background: var(--vermilion);
+  flex: none;
+}
+
+h3 {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 1.9rem 0 0.7rem;
+}
+
+p { margin: 0 0 1.1rem; }
+
+section > :last-child { margin-bottom: 0; }
+
+/* ---------- reference lists (publications, talks): hanging indent ---------- */
+
+.refs p {
+  padding-left: 1.6em;
+  text-indent: -1.6em;
+  margin-bottom: 0.85rem;
+}
+
+/* ---------- news list ---------- */
+
+.news {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.news li {
+  margin-bottom: 0.85rem;
+  padding-left: 4.4rem;
+  position: relative;
+}
+
+.news .year {
+  position: absolute;
+  left: 0;
+  top: 0.22em;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+/* ---------- compact role lists (teaching, service, skills) ---------- */
+
+.roles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.roles li {
+  margin-bottom: 0.7rem;
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.roles li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.32em;
+  height: 0.32em;
+  background: var(--hairline);
+  border-radius: 1px;
+}
+
+.note {
+  color: var(--ink-soft);
+  font-size: 0.97rem;
+}
+
+/* ---------- CV entries (degree / award + date, with details) ---------- */
+
+.entry {
+  margin-bottom: 1.15rem;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.entry-when {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.entry-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.97rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- quiet button (e.g. PDF download) ---------- */
+
+.btn {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--seal);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  padding: 0.5rem 0.9rem;
+}
+
+.btn:hover {
+  border-color: var(--seal);
+  text-decoration: none;
+}
+
+/* ---------- contact ---------- */
+
+address {
+  font-style: normal;
+}
+
+/* ---------- footer ---------- */
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.5rem;
+  justify-content: space-between;
+}
+
+/* ---------- accessibility & media ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+@media print {
+  body { border-top: none; background: #fff; color: #000; }
+  nav, .skip-link, .btn { display: none; }
+  a { color: #000; text-decoration: none; }
+}
+
+@media (max-width: 480px) {
+  header { padding-top: 3rem; }
+  .news li { padding-left: 0; }
+  .news .year { position: static; display: block; margin-bottom: 0.1rem; }
+}
