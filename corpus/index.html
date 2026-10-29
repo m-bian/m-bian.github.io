@@ -14,7 +14,7 @@
 :root{
   --bg:#EDF1EF; --surface:#FAFBFA; --surface-2:#E3E9E6; --line:#C9D3CF; --line-soft:#DCE3E0;
   --ink:#141D1A; --ink-2:#44514D; --ink-3:#6B7974;
-  --zhu:#BF3A1F; --zhu-ink:#FFFFFF; --zhu-soft:#F5DED6; --mark:#F1E3A2; --na:#A3AEAA;
+  --zhu:#BF3A1F; --zhu-ink:#FFFFFF; --zhu-soft:#F5DED6; --mark:#F1E3A2; --hl:#FBEBC8; --hl-bar:#C27D12; --na:#A3AEAA;
   --c1:#3953A4; --c2:#B07A1F; --c3:#237F72; --c4:#8A4C9E; --c5:#557F2E; --c6:#5F6F86; --c7:#B4527F; --c8:#84663F;
   --shadow:0 14px 36px rgba(20,29,26,.18),0 2px 6px rgba(20,29,26,.08);
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
@@ -25,7 +25,7 @@
   :root:not([data-theme="light"]){
     --bg:#111816; --surface:#171F1C; --surface-2:#212B28; --line:#34413C; --line-soft:#27312E;
     --ink:#E2E9E6; --ink-2:#A8B5B0; --ink-3:#83918B;
-    --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --na:#5E6B66;
+    --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66;
     --c1:#8EA6F0; --c2:#E0B460; --c3:#6CCBB9; --c4:#C79BDB; --c5:#A3CC78; --c6:#A6B4C9; --c7:#EE98BE; --c8:#CFAE84;
     --shadow:0 14px 36px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);
     color-scheme:dark;
@@ -34,7 +34,7 @@
 :root[data-theme="dark"]{
   --bg:#111816; --surface:#171F1C; --surface-2:#212B28; --line:#34413C; --line-soft:#27312E;
   --ink:#E2E9E6; --ink-2:#A8B5B0; --ink-3:#83918B;
-  --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --na:#5E6B66;
+  --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66;
   --c1:#8EA6F0; --c2:#E0B460; --c3:#6CCBB9; --c4:#C79BDB; --c5:#A3CC78; --c6:#A6B4C9; --c7:#EE98BE; --c8:#CFAE84;
   --shadow:0 14px 36px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);
   color-scheme:dark;
@@ -99,6 +99,11 @@ button:disabled{cursor:default;opacity:.45}
 #bAuth{max-width:200px;overflow:hidden;text-overflow:ellipsis}
 #bAuth:not(.signed){border-style:dashed}
 .saving{font-size:12px;color:var(--ink-3);white-space:nowrap}
+.hl-only .hl-n{font:12px var(--f-mono);color:var(--ink-3)}
+.hl-only:has(input:checked){color:var(--ink)}
+.hl-tag{color:var(--hl-bar);font-weight:500}
+.btn.hlb{height:26px;padding:0 9px;font-size:12px}
+.btn.hlb[aria-pressed="true"]{background:var(--hl);border-color:var(--hl-bar);color:var(--ink)}
 .sheet.narrow{width:min(540px,100%)}
 #authBody p{margin:0;line-height:1.55}
 details.auth-alt summary{cursor:pointer;font-size:12.5px;color:var(--ink-2)}
@@ -192,7 +197,11 @@ th[aria-sort="ascending"] .so,th[aria-sort="descending"] .so{color:var(--zhu);op
 .grid td{padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top;font-size:13px;white-space:nowrap}
 .grid tbody tr{cursor:pointer}
 .grid tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
+.grid tr.is-hl td{background:var(--hl)}
+.grid tr.is-hl td:first-child{box-shadow:inset 3px 0 0 var(--hl-bar)}
+.grid tbody tr.is-hl:hover td{background:color-mix(in srgb,var(--hl-bar) 22%,var(--surface))}
 .grid tr.is-sel td{background:color-mix(in srgb,var(--c1) 9%,transparent)}
+.grid tr.is-hl.is-sel td{background:color-mix(in srgb,var(--c1) 10%,var(--hl))}
 .grid tr.is-open td{background:var(--zhu-soft)}
 .grid tr.is-open td:first-child{box-shadow:inset 3px 0 0 var(--zhu)}
 .c-sel{width:34px;padding-right:0!important}
@@ -465,6 +474,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
           </div>
           <div class="chips" id="chips"></div>
           <div class="tb-r">
+            <label class="chk hl-only" for="hlOnly" id="hlOnlyWrap" hidden title="Entries highlighted by collaborators"><input type="checkbox" id="hlOnly"> Show only highlighted <span class="hl-n" id="hlN"></span></label>
             <span class="count" id="count"></span>
             <button type="button" class="btn sm" id="bCols">Columns</button>
             <span class="hint">Show</span>
@@ -566,7 +576,7 @@ const S={
   rows:new Map(),ready:false,ver:0,idc:0,
   fields:clone(DEFAULT_FIELDS),sources:{},
   facets:{},register:'Colloquial',dataset:'Main',q:'',regex:false,gq:null,sort:null,trash:false,
-  moreOpen:store.get('more',false),scale:store.get('scale','share'),inclNA:store.get('inclNA',true),
+  moreOpen:store.get('more',false),hlOnly:false,scale:store.get('scale','share'),inclNA:store.get('inclNA',true),
   view:'table',showOrig:store.get('showOrig',true),showTrans:store.get('showTrans',true),colPref:store.get('cols',{}),
   stackBy:store.get('stackBy','use'),stripOpen:store.get('strip',true),
   selected:new Set(),list:[],renderLimit:150,rendered:0,cols:[],
@@ -584,17 +594,43 @@ function colVisible(f){ if(f.key==='translation'||f.key==='gloss'||SCOPE_KEYS.in
 function genId(){ return 'r'+Date.now().toString(36)+(++S.idc).toString(36)+Math.random().toString(36).slice(2,6); }
 
 /* ---------- periods ---------- */
+/* ---------- eras ----------
+   Periods and dates put the era after the number ("9-10th Century CE", "480-350 BCE"),
+   and BCE ranges run from the earlier (larger) number to the later one ("5-3rd Century BCE").
+   Older spellings ("BCE 3-5th Century", "CE 18 Century") are accepted everywhere and rewritten. */
+function ordinal(n){ const v=n%100; return n+((v>=11&&v<=13)?'th':(['th','st','nd','rd'][n%10]||'th')); }
+function parseCentury(s){
+  const m=String(s||'').trim().match(/^(?:(BCE|BC|CE|AD)\s*)?(\d{1,2})(?:st|nd|rd|th)?(?:\s*[-–]\s*(\d{1,2})(?:st|nd|rd|th)?)?\s*(?:centur(?:y|ies)|c\.?)?\s*(BCE|BC|CE|AD)?$/i);
+  if(!m||(m[1]&&m[4])) return null;
+  const era=/^b/i.test(m[1]||m[4]||'')?'BCE':'CE';
+  let a=+m[2], b=m[3]?+m[3]:null;
+  if(b!=null){ if((era==='BCE'&&a<b)||(era==='CE'&&a>b)){ const t=a; a=b; b=t; } if(a===b) b=null; }
+  return {era,a,b};
+}
+function normPeriod(s){
+  const t=String(s==null?'':s).trim(); if(!t||/^modern/i.test(t)) return t;
+  const p=parseCentury(t); if(!p) return t;
+  return (p.b!=null?p.a+'-'+ordinal(p.b):ordinal(p.a))+' Century '+p.era;
+}
+function normDate(s){
+  const t=String(s==null?'':s).trim();
+  const m=t.match(/^((?:circa|ca\.|c\.|~)\s*)?(BCE|BC|CE|AD)\s+(.+)$/i);
+  if(!m) return t;
+  const era=/^b/i.test(m[2])?'BCE':'CE'; let rest=m[3].trim();
+  const y=rest.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+  if(y){ let a=+y[1], b=+y[2]; if((era==='BCE'&&a<b)||(era==='CE'&&a>b)){ const x=a; a=b; b=x; } rest=a+'-'+b; }
+  else { const p=parseCentury(rest+' '+era); if(p&&/\d(st|nd|rd|th)|centur|\bc\.?$/i.test(rest)) rest=(p.b!=null?p.a+'-'+ordinal(p.b):ordinal(p.a))+(/centur/i.test(rest)?' Century':' c.'); }
+  return (m[1]||'')+rest+' '+era;
+}
 function periodKey(p){
   const s=String(p||''); if(!s) return 1e6; if(/modern/i.test(s)) return 2100;
-  const m=s.match(/\b(BCE|BC|CE|AD)?\s*(\d{1,2})(?:st|nd|rd|th)?(?:\s*[-–]\s*(\d{1,2}))?/i);
-  if(!m) return 9e5; const n=+m[2], n2=m[3]?+m[3]:null;
-  if(/^bc/i.test(m[1]||'')) return -Math.max(n,n2||0)*100;
-  return n*100+(n2?0.5:0);
+  const e=parseCentury(s); if(!e) return 9e5;
+  return (e.era==='BCE'?-e.a*100:e.a*100)+(e.b!=null?0.5:0);
 }
 function periodShort(p){
   if(!p) return 'Unassigned'; const raw=String(p); if(/^modern/i.test(raw)) return 'Modern';
-  const s=raw.replace(/\s*centur(y|ies)\s*/i,' ').replace(/(\d)(st|nd|rd|th)\b/gi,'$1').replace(/\s*[-–]\s*/g,'–').trim();
-  return /\d$/.test(s)?s+'c':s;
+  const e=parseCentury(raw); if(!e) return raw;
+  return (e.b!=null?e.a+'–'+e.b:e.a)+'c '+e.era;
 }
 function parseSheetName(n){
   const m=n.match(/\(([^)]+)\)\s*$/); let suf='',per=n.trim();
@@ -604,7 +640,7 @@ function parseSheetName(n){
   else if(/^coll/i.test(suf)) register='Colloquial';
   else if(/\b(hai|ye)\b/i.test(suf)) dataset='hai/ye + DE';
   else if(suf) dataset=suf;
-  return {period:per,register,dataset};
+  return {period:normPeriod(per),register,dataset};
 }
 
 /* ---------- options & colors ---------- */
@@ -701,7 +737,8 @@ function passGlobal(r,g,keys){
 function activeFacets(except){ return Object.entries(S.facets).filter(([k,set])=>k!==except&&set&&set.size); }
 function filtered(except){
   const g=S.gq, keys=globalKeys(), fs=activeFacets(except);
-  return scopeRows().filter(r=>passGlobal(r,g,keys)&&fs.every(([k,set])=>set.has(val(r,k))));
+  const hl=S.hlOnly&&hlVisible();
+  return scopeRows().filter(r=>(!hl||r.highlight)&&passGlobal(r,g,keys)&&fs.every(([k,set])=>set.has(val(r,k))));
 }
 function anyFacet(){ return activeFacets(null).length>0; }
 function defaultCmp(a,b){ return periodKey(a.period)-periodKey(b.period)||coll.compare(regOf(a),regOf(b))||(dsOf(a)==='Main'?0:1)-(dsOf(b)==='Main'?0:1)||(a.seq||0)-(b.seq||0)||coll.compare(a.id,b.id); }
@@ -763,6 +800,8 @@ function renderTop(){
   $$('#dsSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ds===S.dataset)));
   $$('#scaleSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sc===S.scale)));
   $('#resetFacets').hidden=!(anyFacet()||!defaultScope());
+  const hv=hlVisible(); $('#hlOnlyWrap').hidden=!hv; $('#hlOnly').checked=S.hlOnly&&hv;
+  if(hv){ let n=0; for(const r of S.rows.values()) if(r.highlight&&inScope(r)) n++; $('#hlN').textContent=n; }
 }
 
 /* ---------- browse (facets) ---------- */
@@ -849,6 +888,7 @@ function renderChips(){
   if(S.trash) c.push(chip('View','Trash','trash'));
   if(S.register!=='Colloquial') c.push(chip('Register',S.register==='Both'?'Colloquial + Literary':S.register,'reg'));
   if(S.dataset!=='Main') c.push(chip('Dataset',S.dataset==='Both'?'Main + hai/ye + DE':S.dataset,'ds'));
+  if(S.hlOnly&&hlVisible()) c.push(chip('Show','Highlighted only','hl'));
   if(S.q.trim()) c.push(chip(S.regex?'Regex':'Search',S.q.trim(),'q'));
   for(const [k,set] of activeFacets(null)){ const f=F(k); const vals=[...set].map(v=>optLabel(f,v)); c.push(chip(f?f.label:k,vals.length>3?vals.slice(0,2).join(', ')+' +'+(vals.length-2):vals.join(', '),'f:'+k)); }
   if(S.sort){ const f=F(S.sort.key); c.push(chip('Sort',(f?f.label:S.sort.key)+(S.sort.dir==='asc'?' ↑':' ↓'),'sort')); }
@@ -896,7 +936,7 @@ function cellHTML(f,r){
   return '<td class="c-short">'+esc(v||'')+'</td>';
 }
 function rowHTML(r,i,cols,sel){
-  return '<tr data-id="'+esc(r.id)+'" class="'+(S.openId===r.id?'is-open ':'')+(S.selected.has(r.id)?'is-sel':'')+'">'+
+  return '<tr data-id="'+esc(r.id)+'" class="'+(S.openId===r.id?'is-open ':'')+(S.selected.has(r.id)?'is-sel ':'')+(r.highlight&&hlVisible()?'is-hl':'')+'">'+
     (sel?'<td class="c-sel"><input type="checkbox" data-sel="'+esc(r.id)+'"'+(S.selected.has(r.id)?' checked':'')+' aria-label="Select entry"></td>':'')+
     '<td class="c-n">'+(i+1)+'</td>'+cols.map(f=>cellHTML(f,r)).join('')+'</tr>';
 }
@@ -997,7 +1037,7 @@ function renderDrawer(){
   const d=S.draft||pickFields(r); const ed=editable(); const idx=S.list.indexOf(S.openId);
   const anno=S.fields.filter(f=>f.type==='cat'&&f.group!=='source');
   const notes=S.fields.filter(f=>f.type!=='cat'&&f.group!=='source');
-  let h='<div class="dr-head"><div class="dr-pos">'+(S.isNew?'New entry':(idx>=0?(idx+1)+' / '+S.list.length:'Not in current results'))+(r.sample?' · sample':'')+(r.deleted?' · in trash':'')+'</div><div class="dr-nav"><button type="button" class="icb" data-d="prev" aria-label="Previous entry"'+(S.isNew||idx<=0?' disabled':'')+'>↑</button><button type="button" class="icb" data-d="next" aria-label="Next entry"'+(S.isNew||idx<0||idx>=S.list.length-1?' disabled':'')+'>↓</button><button type="button" class="icb" data-d="close" aria-label="Close">✕</button></div></div>';
+  let h='<div class="dr-head"><div class="dr-pos">'+(S.isNew?'New entry':(idx>=0?(idx+1)+' / '+S.list.length:'Not in current results'))+(r.sample?' · sample':'')+(r.deleted?' · in trash':'')+(r.highlight&&hlVisible()&&!S.isNew?' · <span class="hl-tag" title="'+esc(r.highlightAt?fmtTime(r.highlightAt):'')+'">highlighted'+(r.highlightBy?' by @'+esc(r.highlightBy):'')+'</span>':'')+'</div><div class="dr-nav">'+(S.writable&&!S.isNew&&!r.deleted&&S.rows.has(S.openId)?'<button type="button" class="btn sm hlb" data-d="hl" aria-pressed="'+(!!r.highlight)+'" title="'+(r.highlight?'Remove the highlight':'Highlight this entry for your collaborators')+'">'+(r.highlight?'★ Highlighted':'☆ Highlight')+'</button>':'')+'<button type="button" class="icb" data-d="prev" aria-label="Previous entry"'+(S.isNew||idx<=0?' disabled':'')+'>↑</button><button type="button" class="icb" data-d="next" aria-label="Next entry"'+(S.isNew||idx<0||idx>=S.list.length-1?' disabled':'')+'>↓</button><button type="button" class="icb" data-d="close" aria-label="Close">✕</button></div></div>';
   h+='<div class="dr-body" id="drBody"><div class="dr-src" id="drSrc">'+srcLine(d)+'</div><p class="dr-zh" id="drZh">'+(d.text?hl(d.text,true):'<span class="dim">(no main text yet)</span>')+'</p><div class="dr-gl" id="drGl"'+(d.gloss?'':' hidden')+'>'+glossBlock(d.gloss)+'</div><p class="dr-tr" id="drTr"'+(d.translation?'':' hidden')+'>'+esc(d.translation)+'</p>';
   if(ed){
     const regs=['Colloquial','Literary'].concat(optionsFor(F('register')).filter(v=>v!=='Colloquial'&&v!=='Literary'));
@@ -1007,7 +1047,7 @@ function renderDrawer(){
       '<label class="lf wide">Dataset<select id="d-dataset" data-f="dataset">'+['Main','hai/ye + DE'].concat(optionsFor(F('dataset')).filter(v=>v!=='Main'&&v!=='hai/ye + DE')).map(v=>'<option'+(v===(d.dataset||'Main')?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
       '<label class="lf">Work Title<input id="d-work" data-f="work" list="dl-work" value="'+esc(d.work)+'"></label>'+
       '<label class="lf">Section<input id="d-section" data-f="section" value="'+esc(d.section)+'"></label>'+
-      '<label class="lf wide">Time<input id="d-date" data-f="date" value="'+esc(d.date)+'" placeholder="e.g. BCE 480-350"></label>'+
+      '<label class="lf wide">Time<input id="d-date" data-f="date" value="'+esc(d.date)+'" placeholder="e.g. 480-350 BCE"></label>'+
       '<label class="lf wide">Main Text<textarea id="d-text" class="zhin" data-f="text" rows="3">'+esc(d.text)+'</textarea></label>'+
       '<label class="lf wide">Glossing <span class="dim">(grammatical labels in CAPITALS display as small caps)</span><textarea id="d-gloss" data-f="gloss" rows="2" spellcheck="false">'+esc(d.gloss)+'</textarea></label>'+
       '<label class="lf wide">Translation (Context)<textarea id="d-translation" data-f="translation" rows="3">'+esc(d.translation)+'</textarea></label>'+
@@ -1089,6 +1129,7 @@ function cleanDraft(d){
   for(const f of S.fields){ let v=d[f.key]==null?'':String(d[f.key]); v=f.type==='long'?v.replace(/\r\n?/g,'\n').trim():v.replace(/\s+/g,' ').trim(); if(f.type==='cat'&&v) v=normCat(f,v); o[f.key]=v; }
   if(!o.register) o.register='Colloquial';
   if(!o.dataset) o.dataset='Main';
+  o.period=normPeriod(o.period); o.date=normDate(o.date);
   return o;
 }
 function nextSeq(period,reg){ let m=0; for(const r of S.rows.values()) if(r.period===period&&regOf(r)===reg&&(r.seq||0)>m) m=r.seq; return m+1; }
@@ -1139,10 +1180,12 @@ const CFG=Object.assign({owner:'m-bian',repo:'de-dei-corpus',branch:'main',appCl
 const API='https://api.github.com';
 const REPO='/repos/'+CFG.owner+'/'+CFG.repo;
 const ENTRY_DIR='data/entries/', META_DIR='data/meta/';
-const META_KEYS=new Set(['createdAt','createdBy','updatedAt','updatedBy','deletedAt','deletedBy']);
-const ENTRY_ORDER=DEFAULT_FIELDS.map(f=>f.key).concat(['comment','sample','seq','key','deleted','deletedAt','deletedBy','createdAt','createdBy','updatedAt','updatedBy']);
+const META_KEYS=new Set(['createdAt','createdBy','updatedAt','updatedBy','deletedAt','deletedBy','highlight','highlightBy','highlightAt']);
+const ENTRY_ORDER=DEFAULT_FIELDS.map(f=>f.key).concat(['highlight','highlightBy','highlightAt','comment','sample','seq','key','deleted','deletedAt','deletedBy','createdAt','createdBy','updatedAt','updatedBy']);
 const eqv=(a,b)=>JSON.stringify(a==null?'':a)===JSON.stringify(b==null?'':b);
 function stripId(row){ const o=Object.assign({},row); delete o.id; return o; }
+/* In a patch, null removes the field. */
+function mergePatch(base,patch){ const o=Object.assign({},base,patch); for(const k of Object.keys(patch)) if(patch[k]===null) delete o[k]; return o; }
 function serEntry(row){
   const rk=k=>{ const i=ENTRY_ORDER.indexOf(k); return i<0?999:i; };
   const ks=Object.keys(row).filter(k=>k!=='id'&&row[k]!==undefined).sort((a,b)=>rk(a)-rk(b)||(a<b?-1:a>b?1:0));
@@ -1228,7 +1271,7 @@ function signOut(quiet){
 S.remote=new Map(); S.blob=new Map(); S.pend=new Map(); S.metaRemote={}; S.headSha=null; S.treeSha=null;
 function displayRow(id){
   let r=S.remote.has(id)?Object.assign({},S.remote.get(id),{id}):null;
-  const ps=S.pend.get(id); if(ps) for(const op of ps){ if(op.t==='del') r=null; else if(op.t==='put') r=Object.assign({},op.row,{id}); else if(op.t==='patch') r=Object.assign({},r||{},op.patch,{id}); }
+  const ps=S.pend.get(id); if(ps) for(const op of ps){ if(op.t==='del') r=null; else if(op.t==='put') r=Object.assign({},op.row,{id}); else if(op.t==='patch') r=Object.assign(mergePatch(r||{},op.patch),{id}); }
   return r;
 }
 function refreshRow(id){ const r=displayRow(id); if(r) S.rows.set(id,r); else S.rows.delete(id); }
@@ -1315,7 +1358,7 @@ async function commitBatch(ops){
         const c=cur(op.id); if(!c){ bad.push([op,new GhError(404,'gone',{code:'gone'})]); continue; }
         const clash=Object.keys(op.patch).filter(k=>!META_KEYS.has(k)&&op.base&&(k in op.base)&&!eqv(c[k],op.base[k])&&!eqv(c[k],op.patch[k]));
         if(clash.length){ bad.push([op,new GhError(409,'conflict',{code:'conflict',fields:clash,id:op.id})]); continue; }
-        next.set(op.id,Object.assign({},c,op.patch)); good.push(op);
+        next.set(op.id,mergePatch(c,op.patch)); good.push(op);
       }
       else if(op.t==='del'){ next.set(op.id,null); good.push(op); }
       else if(op.t==='meta'){ metaNext[op.name]=op.data; good.push(op); }
@@ -1366,6 +1409,14 @@ async function ensureOptions(rows){
     for(const r of rows){ const v=r[f.key]; if(v&&!(f.options||[]).includes(v)){ f.options=(f.options||[]).concat([v]); changed=true; } }
   }
   if(changed){ bump(); try{ await saveSchema(); }catch(e){} }
+}
+/* Highlights are a working signal between collaborators, so only signed-in collaborators see them. */
+function hlVisible(){ return !!(AUTH.read); }
+async function setHighlight(ids,on){
+  const now=Date.now();
+  const errs=await runPool(ids,id=>patchRow(id,on?{highlight:true,highlightBy:S.myId||null,highlightAt:now}:{highlight:null,highlightBy:null,highlightAt:null},on?'Highlight':'Remove highlight'));
+  if(errs.length) toastErr(errs[0],on?'Not highlighted':'Highlight not removed');
+  else toast((on?'Highlighted ':'Removed the highlight from ')+ids.length+' '+(ids.length===1?'entry':'entries'));
 }
 async function trashIds(ids){
   const now=Date.now(); const errs=await runPool(ids,id=>patchRow(id,{deleted:true,deletedAt:now,deletedBy:S.myId||null},'Move to trash'));
@@ -1425,7 +1476,7 @@ function renderBulk(){
   const cats=S.fields.filter(f=>f.type==='cat');
   const fk=(S.bulkField&&F(S.bulkField))?S.bulkField:'use';
   b.dataset.mode='edit'; b.dataset.n=String(n);
-  b.innerHTML='<span><b>'+n+'</b> selected</span><label>Set <select id="bkField" aria-label="Field">'+cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===fk?' selected':'')+'>'+esc(f.label)+'</option>').join('')+'</select></label><label>to <input id="bkVal" list="bkList" placeholder="Pick or type" aria-label="Value"></label><datalist id="bkList"></datalist><button type="button" class="bb zhu" data-b="apply">Apply</button><span class="vs"></span><button type="button" class="bb" data-b="trash">Move to trash</button><button type="button" class="bb" data-b="none">Clear selection</button>';
+  b.innerHTML='<span><b>'+n+'</b> selected</span><label>Set <select id="bkField" aria-label="Field">'+cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===fk?' selected':'')+'>'+esc(f.label)+'</option>').join('')+'</select></label><label>to <input id="bkVal" list="bkList" placeholder="Pick or type" aria-label="Value"></label><datalist id="bkList"></datalist><button type="button" class="bb zhu" data-b="apply">Apply</button><span class="vs"></span><button type="button" class="bb" data-b="hl-on">☆ Highlight</button><button type="button" class="bb" data-b="hl-off">Remove highlight</button><span class="vs"></span><button type="button" class="bb" data-b="trash">Move to trash</button><button type="button" class="bb" data-b="none">Clear selection</button>';
   fillBulkList();
 }
 function fillBulkList(){ const f=F($('#bkField').value); S.bulkField=f.key; $('#bkList').innerHTML=optionsFor(f).map(v=>'<option value="'+esc(v)+'">').join(''); }
@@ -1543,7 +1594,7 @@ function planImport(){
         }
         row=normalizeAnno(row);
         for(const f of S.fields){ if(f.type!=='cat'||f.key==='work'||f.key==='period') continue; const v=row[f.key]; if(v&&!optionsFor(f).includes(v)) (newVals[f.key]=newVals[f.key]||new Set()).add(v); }
-        row.text=text; row.seq=++seq;
+        row.text=text; row.seq=++seq; row.period=normPeriod(row.period); if(row.date) row.date=normDate(row.date);
         const base=row.period+'|'+(row.work||'')+'|'+(row.section||'')+'|'+text.replace(/\s+/g,'');
         const n=(occ.get(base)||0)+1; occ.set(base,n); row.key=base+'#'+n;
         const ex=existing.get(row.key);
@@ -1565,7 +1616,7 @@ function renderImport(){
     foot.innerHTML='<button type="button" class="btn primary" data-x="close">Done</button>'; return;
   }
   if(!IMP.sheets.length){
-    bodyEl.innerHTML='<label class="drop" id="drop"><input type="file" id="impFile" accept=".xlsx,.xls,.xlsm,.csv"><b>Choose or drop a workbook</b><span>Accepts .xlsx, .xls and .csv. Sheets with a “Main Text” header row are read as corpus sheets; summary and chart sheets are skipped. Each sheet name is split into Period and Register, e.g. “CE 9-10th Century (Colloquial)”. Sheets without a register are treated as Colloquial. You can change both before importing.</span></label>'+(IMP.err?'<p class="err">'+esc(IMP.err)+'</p>':'');
+    bodyEl.innerHTML='<label class="drop" id="drop"><input type="file" id="impFile" accept=".xlsx,.xls,.xlsm,.csv"><b>Choose or drop a workbook</b><span>Accepts .xlsx, .xls and .csv. Sheets with a “Main Text” header row are read as corpus sheets; summary and chart sheets are skipped. Each sheet name is split into Period and Register, e.g. “9-10th Century CE (Colloquial)”. Sheets without a register are treated as Colloquial. You can change both before importing.</span></label>'+(IMP.err?'<p class="err">'+esc(IMP.err)+'</p>':'');
     foot.innerHTML='<button type="button" class="btn" data-x="close">Cancel</button>'; return;
   }
   planImport(); const p=IMP.plan;
@@ -1734,6 +1785,7 @@ function setInclNA(on){ S.inclNA=on; store.set('inclNA',on); schedule(); }
 let qT=0;
 function bind(){
   $('#q').addEventListener('input',e=>{ clearTimeout(qT); qT=setTimeout(()=>{ S.q=e.target.value; S.renderLimit=150; schedule(); },140); });
+  $('#hlOnly').addEventListener('change',e=>{ guard(()=>{ S.hlOnly=e.target.checked; S.renderLimit=150; schedule(); }); });
   $('#rx').addEventListener('click',()=>{ S.regex=!S.regex; $('#rx').setAttribute('aria-pressed',String(S.regex)); schedule(); });
   $('#anno').addEventListener('change',e=>{ const want=e.target.checked; if(S.dirty){ e.target.checked=S.annotate; } guard(()=>{ S.annotate=want; store.set('annotate',S.annotate); S.selected.clear(); render(); if(S.openId) renderDrawer(); }); });
   $('#bImport').addEventListener('click',openImport);
@@ -1822,6 +1874,7 @@ function bind(){
       onDraftChange(); return; }
     const b=e.target.closest('[data-d]'); if(!b) return; const a=b.dataset.d;
     if(a==='prev') navDrawer(-1); else if(a==='next') navDrawer(1); else if(a==='close') closeDrawer();
+    else if(a==='hl'){ const r=S.rows.get(S.openId); if(r){ setHighlight([S.openId],!r.highlight); renderDrawer(); } }
     else if(a==='save') saveOpen();
     else if(a==='revert'){ S.draft=clone(S.orig); S.dirty=false; renderDrawer(); }
     else if(a==='annotate'){ S.annotate=true; store.set('annotate',true); render(); renderDrawer(); }
@@ -1842,6 +1895,7 @@ function bind(){
   $('#bulk').addEventListener('click',e=>{ const b=e.target.closest('[data-b]'); if(!b) return; const a=b.dataset.b;
     if(a==='none'){ S.selected.clear(); render(); }
     else if(a==='apply') bulkApply();
+    else if(a==='hl-on'||a==='hl-off') setHighlight([...S.selected],a==='hl-on');
     else if(a==='trash'){ const ids=[...S.selected]; S.selected.clear(); trashIds(ids); render(); }
     else if(a==='restore'){ const ids=[...S.selected]; S.selected.clear(); restoreIds(ids); render(); }
     else if(a==='purge'){ S.bulkConfirm=true; renderBulk(); }
@@ -1912,7 +1966,8 @@ function bind(){
   });
 }
 function clearChip(id){
-  if(id==='all'){ S.facets={}; S.q=''; $('#q').value=''; S.sort=null; S.trash=false; S.register='Colloquial'; S.dataset='Main'; }
+  if(id==='all'){ S.facets={}; S.q=''; $('#q').value=''; S.sort=null; S.trash=false; S.hlOnly=false; S.register='Colloquial'; S.dataset='Main'; }
+  else if(id==='hl') S.hlOnly=false;
   else if(id==='q'){ S.q=''; $('#q').value=''; }
   else if(id==='sort') S.sort=null;
   else if(id==='reg') S.register='Colloquial';
