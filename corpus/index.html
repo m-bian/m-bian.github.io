@@ -110,6 +110,12 @@ details.auth-alt summary{cursor:pointer;font-size:12.5px;color:var(--ink-2)}
 details.auth-alt .muted{margin:8px 0 0}
 .auth-pat{display:flex;gap:8px;margin-top:8px}
 .auth-pat input{flex:1;min-width:0;height:32px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:13px var(--f-mono)}
+.auth-err{margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--zhu);background:var(--zhu-soft);border-radius:4px;font-size:13px;line-height:1.55;color:var(--ink)}
+.auth-err b{font-weight:600}
+.auth-err code,ol.auth-steps code{font:12px var(--f-mono)}
+ol.auth-steps{margin:0 0 4px;padding-left:20px;font-size:13px;line-height:1.6}
+ol.auth-steps li+li{margin-top:6px}
+.auth-when{margin-top:10px!important;font-size:12px;color:var(--ink-3)}
 .seg2{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
 .seg2 button{border:0;background:transparent;height:28px;padding:0 11px;font-size:12.5px;font-weight:500;color:var(--ink-2)}
 .seg2 button + button{border-left:1px solid var(--line)}
@@ -1201,19 +1207,20 @@ async function gitBlobSha(text){
 async function runLimited(items,n,fn){ let i=0; const errs=[]; await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{ while(i<items.length){ const it=items[i++]; try{ await fn(it); }catch(e){ errs.push(e); } } })); if(errs.length) throw errs[0]; }
 
 /* ---- sign-in ---- */
-const AUTH={token:null,refresh:null,exp:0,login:null,name:null,read:false,push:false,checked:false};
-function loadAuth(){ const a=store.get('gh',null); if(a&&a.token){ AUTH.token=a.token; AUTH.refresh=a.refresh||null; AUTH.exp=a.exp||0; } }
-function saveAuth(){ store.set('gh',AUTH.token?{token:AUTH.token,refresh:AUTH.refresh,exp:AUTH.exp}:null); }
-function setToken(d){ AUTH.token=d.access_token; AUTH.refresh=d.refresh_token||null; AUTH.exp=d.expires_in?Date.now()+d.expires_in*1000:0; saveAuth(); }
+const AUTH={token:null,refresh:null,exp:0,via:null,login:null,name:null,read:false,push:false,checked:false,problem:null};
+function loadAuth(){ const a=store.get('gh',null); if(a&&a.token){ AUTH.token=a.token; AUTH.refresh=a.refresh||null; AUTH.exp=a.exp||0; AUTH.via=a.via||(a.refresh||a.exp?'app':'token'); } }
+function saveAuth(){ store.set('gh',AUTH.token?{token:AUTH.token,refresh:AUTH.refresh,exp:AUTH.exp,via:AUTH.via}:null); }
+function setToken(d){ AUTH.token=d.access_token; AUTH.refresh=d.refresh_token||null; AUTH.exp=d.expires_in?Date.now()+d.expires_in*1000:0; AUTH.via='app'; saveAuth(); }
 class GhError extends Error{
   constructor(status,msg,extra){ super(msg||('HTTP '+status)); this.status=status; Object.assign(this,extra||{});
     if(!this.code) this.code=status===401?'auth':(status===403||status===404)?'forbidden':(status===409||status===422)?'conflict':'unavailable'; }
 }
+function authErr(code,msg){ return Object.assign(new Error(msg||code),{code}); }
 async function relay(body){
-  if(!CFG.authRelay) throw new Error('sign-in is not configured');
-  let res; try{ res=await fetch(CFG.authRelay,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }catch(e){ throw new Error('the sign-in service is unreachable'); }
+  if(!CFG.authRelay) throw authErr('not_configured','sign-in is not configured');
+  let res; try{ res=await fetch(CFG.authRelay,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }catch(e){ throw authErr('unreachable','the sign-in helper could not be reached'); }
   let d=null; try{ d=await res.json(); }catch(e){}
-  if(!res.ok||!d||!d.access_token) throw new Error((d&&(d.error_description||d.error))||'the sign-in service refused the request');
+  if(!res.ok||!d||!d.access_token) throw authErr((d&&d.error)||('http_'+res.status),(d&&(d.error_description||d.error))||'the sign-in helper refused the request');
   return d;
 }
 let refreshing=null;
@@ -1237,32 +1244,76 @@ async function gh(path,opt){
   if(!res.ok){ const m=(data&&data.message)||res.statusText; throw new GhError(res.status,m,(res.status===403||res.status===429)&&/rate limit/i.test(m)?{code:'rate_limited'}:null); }
   return data;
 }
+/* The state value is kept in both storages: sessionStorage is the usual place, localStorage covers a return
+   in another tab of the same browser (e.g. when a phone hands the GitHub page to another window). */
 function startOAuth(){
   const st=Math.random().toString(36).slice(2)+Date.now().toString(36);
   try{ sessionStorage.setItem('dedei.oauth',st); }catch(e){}
+  try{ localStorage.setItem('dedei.oauth',st); }catch(e){}
   location.href='https://github.com/login/oauth/authorize?client_id='+encodeURIComponent(CFG.appClientId)+'&redirect_uri='+encodeURIComponent(location.origin+location.pathname.replace(/index\.html$/,''))+'&state='+encodeURIComponent(st);
 }
+function relayHost(){ try{ return new URL(CFG.authRelay).host; }catch(e){ return 'the sign-in helper'; } }
+/* What a collaborator should do about each way sign-in can fail. tok: also open the token option. */
+function signInHelp(code,detail){
+  const owner='@'+CFG.owner;
+  switch(code){
+    case 'unreachable': return {tok:true,html:'This browser could not reach the sign-in helper at <code>'+esc(relayHost())+'</code>. An ad or tracker blocker, a VPN, or a university or company network filter may be blocking it (it is also blocked in mainland China). Allow it for this page and try again, or use a personal access token below.'};
+    case 'bad_verification_code': return {html:'The one-time code from GitHub had expired or had already been used. Please try again.'};
+    case 'forbidden': return {html:'The sign-in helper does not accept requests from <code>'+esc(location.origin)+'</code>. Please tell '+esc(owner)+' (its <code>ALLOWED_ORIGINS</code> setting needs this address).'};
+    case 'not_configured': case 'incorrect_client_credentials': return {tok:true,html:'The sign-in helper is not set up correctly. Please tell '+esc(owner)+'. Meanwhile you can use a personal access token below.'};
+    case 'redirect_uri_mismatch': return {html:'GitHub would not send you back to this address. Open the corpus from its usual address and try again; if it keeps happening, tell '+esc(owner)+'.'};
+    case 'state': return {html:'The sign-in came back to a different tab or browser from the one it started in. Please try again in this tab.'};
+    case 'bad_token': return {tok:true,html:'GitHub did not accept this token. Check that it was copied whole and has not expired.'};
+    default: return {tok:true,html:'GitHub did not complete the sign-in'+(detail?' (“'+esc(detail)+'”)':'')+'. Please try again. If it fails again, use a personal access token below and tell '+esc(owner)+'.'};
+  }
+}
+function signInProblem(code,detail){ const h=signInHelp(code,detail); openAuth({html:h.html,code,tok:!!h.tok}); }
 async function finishOAuth(){
-  const u=new URL(location.href); const code=u.searchParams.get('code'), st=u.searchParams.get('state'), err=u.searchParams.get('error');
+  const u=new URL(location.href); const code=u.searchParams.get('code'), st=u.searchParams.get('state'), err=u.searchParams.get('error'), desc=u.searchParams.get('error_description');
   if(!code&&!err) return;
   ['code','state','error','error_description','error_uri','installation_id','setup_action'].forEach(k=>u.searchParams.delete(k));
   history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);
-  if(err){ toast('Sign-in was cancelled'); return; }
-  let want=null; try{ want=sessionStorage.getItem('dedei.oauth'); sessionStorage.removeItem('dedei.oauth'); }catch(e){}
-  if(!want||want!==st){ toast('Sign-in was interrupted; try again'); return; }
-  try{ setToken(await relay({code})); }catch(e){ toast('Sign-in failed: '+e.message); }
+  let want=null;
+  try{ want=sessionStorage.getItem('dedei.oauth'); sessionStorage.removeItem('dedei.oauth'); }catch(e){}
+  try{ want=want||localStorage.getItem('dedei.oauth'); localStorage.removeItem('dedei.oauth'); }catch(e){}
+  if(err){ if(err==='access_denied') toast('Sign-in was cancelled'); else signInProblem(err,desc); return; }
+  if(!want||want!==st){ signInProblem('state'); return; }
+  try{ setToken(await relay({code})); }catch(e){ console.warn('Sign-in failed',e.code,e.message); signInProblem(e.code,e.message); }
 }
 async function checkAccess(){
-  AUTH.login=null; AUTH.name=null; AUTH.read=false; AUTH.push=false;
+  AUTH.login=null; AUTH.name=null; AUTH.read=false; AUTH.push=false; AUTH.problem=null;
   if(AUTH.token){
     try{ const u=await gh('/user'); AUTH.login=u.login; AUTH.name=u.name||u.login; }
-    catch(e){ if(e.status===401){ signOut(true); toast('Your sign-in has expired; sign in again'); } AUTH.checked=true; return; }
-    try{ const r=await gh(REPO); AUTH.read=true; const p=r.permissions; AUTH.push=p?!!(p.push||p.maintain||p.admin):true; }catch(e){}
+    catch(e){
+      if(e.status===401){ const viaToken=AUTH.via==='token'; signOut(true); if(viaToken) signInProblem('bad_token'); else toast('Your sign-in has expired; sign in again'); }
+      else AUTH.problem='offline';
+      AUTH.checked=true; return;
+    }
+    try{ const r=await gh(REPO); AUTH.read=true; const p=r.permissions; AUTH.push=p?!!(p.push||p.maintain||p.admin):true; }
+    catch(e){ AUTH.problem=(e.status===403||e.status===404)?'no-repo':'offline'; }
   }
   AUTH.checked=true; S.myId=AUTH.login; S.writable=AUTH.push;
 }
+/* After checking access: explain anything that keeps a signed-in person from editing. */
+function explainAccess(again){
+  if(!AUTH.token) return;
+  if(AUTH.problem==='offline'){ toast('GitHub could not be reached; reload to try again'); return; }
+  if(AUTH.login&&AUTH.problem==='no-repo') openAccessHelp(again);
+}
+function openAccessHelp(again){
+  const repo=CFG.owner+'/'+CFG.repo, me='@'+(AUTH.login||'?'), viaToken=AUTH.via==='token';
+  $('#authBody').innerHTML='<div class="auth-err" role="alert"><b>You are signed in as '+esc(me)+', but GitHub does not give this account access to '+esc(repo)+' yet.</b></div>'
+    +'<ol class="auth-steps">'
+    +'<li>Accept the invitation: open <a href="https://github.com/'+esc(repo)+'/invitations" target="_blank" rel="noopener">github.com/'+esc(repo)+'/invitations</a> (GitHub also sent it by email) and click <b>Accept invitation</b>. You must be logged in to GitHub as '+esc(me)+'.</li>'
+    +'<li>If GitHub says there is no invitation, ask @'+esc(CFG.owner)+' to invite <b>'+esc(me)+'</b>, or sign out and sign in with the GitHub account that was invited.</li>'
+    +(viaToken?'<li>You signed in with a token. A fine-grained token cannot reach another person’s repository: use <b>Sign in with GitHub</b>, or a classic token with the <code>repo</code> scope.</li>':'')
+    +'<li>Then click <b>Check again</b>.</li></ol>'
+    +(again?'<p class="auth-when">Checked again at '+esc(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}))+': still no access.</p>':'');
+  $('#authFoot').innerHTML='<button type="button" class="btn" id="authOut">Sign out</button><span class="grow"></span><button type="button" class="btn" data-x="close">Close</button><button type="button" class="btn primary" id="authRecheck">Check again</button>';
+  $('#mAuth').hidden=false;
+}
 function signOut(quiet){
-  Object.assign(AUTH,{token:null,refresh:null,exp:0,login:null,name:null,read:false,push:false}); saveAuth();
+  Object.assign(AUTH,{token:null,refresh:null,exp:0,via:null,login:null,name:null,read:false,push:false,problem:null}); saveAuth();
   S.myId=null; S.writable=false; S.selected.clear(); stopPolling();
   if(!quiet) toast('Signed out'); renderAuth(); render(); if(S.openId) renderDrawer();
 }
@@ -1442,23 +1493,28 @@ function renderAuth(){
   if(!AUTH.token){ b.textContent='Sign in'; b.title='Collaborators: sign in with GitHub to edit'; b.classList.remove('signed'); }
   else { b.textContent=AUTH.login?'@'+AUTH.login+' ▾':'Signed in ▾'; b.title=AUTH.push?'You can edit the corpus':'View only'; b.classList.add('signed'); }
   const m=$('#authMenu'); if(!m||m.hidden) return;
-  m.innerHTML='<div class="who">Signed in as <b>@'+esc(AUTH.login||'?')+'</b><br>'+(AUTH.push?'<span class="ok">Can edit the corpus</span>':'<span class="ro">View only: this account has no edit access to '+esc(CFG.owner+'/'+CFG.repo)+'</span>')+'</div><hr>'
-    +(AUTH.read?'<a href="https://github.com/'+esc(CFG.owner+'/'+CFG.repo)+'/commits/'+esc(CFG.branch)+'" target="_blank" rel="noopener"><span>Edit history</span><span class="k">GitHub ↗</span></a><button type="button" data-am="sync"><span>Check for updates</span></button>':'')
+  const repo=CFG.owner+'/'+CFG.repo;
+  m.innerHTML='<div class="who">Signed in as <b>@'+esc(AUTH.login||'?')+'</b><br>'+(AUTH.push?'<span class="ok">Can edit the corpus</span>':AUTH.read?'<span class="ro">View only: this account can read '+esc(repo)+' but not edit it</span>':'<span class="ro">No access to '+esc(repo)+' yet</span>')+'</div><hr>'
+    +(AUTH.read?'<a href="https://github.com/'+esc(repo)+'/commits/'+esc(CFG.branch)+'" target="_blank" rel="noopener"><span>Edit history</span><span class="k">GitHub ↗</span></a><button type="button" data-am="sync"><span>Check for updates</span></button>':'<button type="button" data-am="help"><span>Why can’t I edit?</span></button>')
     +'<button type="button" data-am="out"><span>Sign out</span></button>';
 }
-function openAuth(){
+/* problem: {html, code, tok} when an earlier sign-in attempt failed. */
+function openAuth(problem){
   const ok=!!(CFG.appClientId&&CFG.authRelay);
-  $('#authBody').innerHTML='<p>Collaborators sign in with their GitHub account to annotate, add and remove entries. Every change is saved as a commit in the corpus repository. Everyone else can browse without signing in.</p>'
+  const tokOpen=!ok||!!(problem&&problem.tok);
+  $('#authBody').innerHTML=(problem?'<div class="auth-err" role="alert"><b>Sign-in did not finish.</b> '+problem.html+(problem.code?' <span class="muted">(code: <code>'+esc(problem.code)+'</code>)</span>':'')+'</div>':'')
+    +'<p>Collaborators sign in with their GitHub account to annotate, add and remove entries. Every change is saved as a commit in the corpus repository. Everyone else can browse without signing in.</p>'
     +(ok?'':'<p class="muted">GitHub sign-in has not been set up for this page yet. You can use a personal access token instead.</p>')
-    +'<details class="auth-alt"'+(ok?'':' open')+'><summary>Use a personal access token instead</summary><p class="muted">The token needs write access to the contents of '+esc(CFG.owner+'/'+CFG.repo)+'. It is kept only in this browser.</p><div class="auth-pat"><input id="patIn" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_… or ghp_…" aria-label="Personal access token"><button type="button" class="btn" id="patGo">Use token</button></div></details>';
-  $('#authFoot').innerHTML='<span class="grow"></span><button type="button" class="btn" data-x="close">Cancel</button>'+(ok?'<button type="button" class="btn primary" id="ghGo">Sign in with GitHub</button>':'');
+    +'<details class="auth-alt"'+(tokOpen?' open':'')+'><summary>Use a personal access token instead</summary><p class="muted">The token needs write access to the contents of '+esc(CFG.owner+'/'+CFG.repo)+'. For someone else’s repository GitHub only allows a classic token with the <code>repo</code> scope. It is kept only in this browser.</p><div class="auth-pat"><input id="patIn" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_… or github_pat_…" aria-label="Personal access token"><button type="button" class="btn" id="patGo">Use token</button></div></details>';
+  $('#authFoot').innerHTML='<span class="grow"></span><button type="button" class="btn" data-x="close">Cancel</button>'+(ok?'<button type="button" class="btn primary" id="ghGo">'+(problem?'Try again with GitHub':'Sign in with GitHub')+'</button>':'');
   $('#mAuth').hidden=false;
 }
-async function afterSignIn(){
+async function afterSignIn(again){
   await checkAccess(); renderAuth();
   if(!AUTH.token) return;
   if(AUTH.read){ try{ await syncRepo(); }catch(e){} startPolling(); }
-  toast(AUTH.push?'Signed in as @'+AUTH.login+'. You can edit now.':'Signed in as @'+AUTH.login+', but this account has no edit access');
+  if(AUTH.read) toast(AUTH.push?'Signed in as @'+AUTH.login+'. You can edit now.':'Signed in as @'+AUTH.login+', but this account can only read the corpus');
+  else explainAccess(again);
   render(); if(S.openId) renderDrawer();
 }
 
@@ -1792,10 +1848,13 @@ function bind(){
   $('#bAuth').addEventListener('click',e=>{ e.stopPropagation(); if(!AUTH.token){ openAuth(); return; } const m=$('#authMenu'); m.hidden=!m.hidden; $('#bAuth').setAttribute('aria-expanded',String(!m.hidden)); renderAuth(); });
   $('#authMenu').addEventListener('click',e=>{ const b=e.target.closest('button[data-am]'); if(!b) return; $('#authMenu').hidden=true;
     if(b.dataset.am==='out') guard(()=>signOut());
+    else if(b.dataset.am==='help') openAccessHelp();
     else if(b.dataset.am==='sync') syncRepo().then(n=>toast(n?'Loaded '+n+' updated '+(n===1?'file':'files')+' from GitHub':'Already up to date'),err=>toastErr(err,'Update failed')); });
   $('#mAuth').addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t) return;
     if(t.id==='ghGo') startOAuth();
-    else if(t.id==='patGo'){ const v=$('#patIn').value.trim(); if(!v){ $('#patIn').focus(); return; } AUTH.token=v; AUTH.refresh=null; AUTH.exp=0; saveAuth(); $('#mAuth').hidden=true; afterSignIn(); } });
+    else if(t.id==='patGo'){ const v=$('#patIn').value.trim(); if(!v){ $('#patIn').focus(); return; } AUTH.token=v; AUTH.refresh=null; AUTH.exp=0; AUTH.via='token'; saveAuth(); $('#mAuth').hidden=true; afterSignIn(); }
+    else if(t.id==='authRecheck'){ $('#mAuth').hidden=true; afterSignIn(true); }
+    else if(t.id==='authOut'){ $('#mAuth').hidden=true; guard(()=>signOut()); } });
   $('#mAuth').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='patIn'){ e.preventDefault(); $('#patGo').click(); } });
   $('#bNew').addEventListener('click',()=>{ if(S.view!=='table'){ S.view='table'; render(); } newRow(); });
   $('#bMore').addEventListener('click',e=>{ e.stopPropagation(); const m=$('#moreMenu'); m.hidden=!m.hidden; $('#bMore').setAttribute('aria-expanded',String(!m.hidden)); });
@@ -2002,7 +2061,7 @@ async function boot(){
   let bundled=false;
   try{ await loadBundle(); bundled=true; S.ready=true; render(); }catch(e){ console.warn('Bundle not loaded',e); }
   await oauth;
-  if(AUTH.token){ await checkAccess(); renderAuth(); render(); }
+  if(AUTH.token){ await checkAccess(); renderAuth(); render(); explainAccess(); }
   if(AUTH.read){
     try{ await syncRepo(); }catch(e){ if(!bundled) toast('GitHub could not be reached; reload to try again'); }
     startPolling();
