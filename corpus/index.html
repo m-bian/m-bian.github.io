@@ -359,6 +359,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
 .pv td{font:12.5px var(--f-mono);font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--c1) var(--a,0%),transparent)}
 .pv td.tot,.pv tr.tot td,.pv tr.tot th{font-weight:600;background:var(--bg)}
 .pv td.z{color:var(--ink-3)}
+.pv td.na,.pv th.na{font-style:italic;font-weight:400;color:var(--ink-3)}
 .pv input{width:96px;height:26px;padding:0 6px;border:1px solid var(--line);border-radius:5px;background:var(--surface);font:12px var(--f-mono);text-align:right}
 .copyta{width:100%;max-width:1200px;height:120px;font:12px var(--f-mono);border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:8px}
 
@@ -1694,23 +1695,25 @@ function renderStats(){
   const rowTot=v=>{ let t=0; for(const c of cv) t+=M.get(v+'\u0000'+c)||0; return t; };
   const fmt=(n,v)=>{ if(S.pivot.mode==='row'){ const t=rowTot(v); return t?(n/t*100).toFixed(2)+'%':'—'; } if(S.pivot.mode==='per10k'){ const ch=chars(v); return ch?(n/ch*1e4).toFixed(2):'—'; } return String(n); };
   const vv=(n,v)=>{ if(S.pivot.mode==='row'){ const t=rowTot(v); return t?n/t:0; } if(S.pivot.mode==='per10k'){ const ch=chars(v); return ch?n/ch:0; } return n; };
-  let mx=0; for(const a of rv) for(const b of cv){ const x=vv(M.get(a+'\u0000'+b)||0,a); if(x>mx) mx=x; }
+  /* Unannotated rows and columns are shown in grey italics and take no part in the shading. */
+  const naV=v=>isNA(v);
+  let mx=0; for(const a of rv){ if(naV(a)) continue; for(const b of cv){ if(naV(b)) continue; const x=vv(M.get(a+'\u0000'+b)||0,a); if(x>mx) mx=x; } }
   const tsv=[[rf.label+' \\ '+cf.label].concat(cv.map(v=>optLabel(cf,v))).concat(['Total'])];
   let tb='';
   for(const a of rv){
-    const cells=cv.map(b=>{ const n=M.get(a+'\u0000'+b)||0; return {n,s:fmt(n,a),a:mx?Math.round(vv(n,a)/mx*34):0}; });
+    const cells=cv.map(b=>{ const n=M.get(a+'\u0000'+b)||0, na=naV(a)||naV(b); return {n,na,s:fmt(n,a),a:mx&&!na?Math.round(vv(n,a)/mx*34):0}; });
     const t=rowTot(a), ts=S.pivot.mode==='per10k'?fmt(t,a):String(t);
     tsv.push([optLabel(rf,a)].concat(cells.map(c=>c.s)).concat([ts]));
-    tb+='<tr><th class="rh" title="'+esc(a)+'">'+esc(optLabel(rf,a))+'</th>'+cells.map(c=>'<td class="'+(c.n?'':'z')+'" style="--a:'+c.a+'%">'+esc(c.s)+'</td>').join('')+'<td class="tot">'+esc(ts)+'</td></tr>';
+    tb+='<tr><th class="rh'+(naV(a)?' na':'')+'" title="'+esc(a)+'">'+esc(optLabel(rf,a))+'</th>'+cells.map(c=>'<td class="'+(c.n?'':'z')+(c.na?' na':'')+'" style="--a:'+c.a+'%">'+esc(c.s)+'</td>').join('')+'<td class="tot'+(naV(a)?' na':'')+'">'+esc(ts)+'</td></tr>';
   }
   const colT=cv.map(b=>{ let t=0; for(const a of rv) t+=M.get(a+'\u0000'+b)||0; return t; });
-  tb+='<tr class="tot"><th class="rh">Total</th>'+colT.map(t=>'<td>'+t+'</td>').join('')+'<td>'+list.length+'</td></tr>';
+  tb+='<tr class="tot"><th class="rh">Total</th>'+colT.map((t,i)=>'<td'+(naV(cv[i])?' class="na"':'')+'>'+t+'</td>').join('')+'<td>'+list.length+'</td></tr>';
   tsv.push(['Total'].concat(colT.map(String)).concat([String(list.length)]));
   S.copyText=tsv.map(r=>r.join('\t')).join('\n');
   const opt=sel=>cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===sel?' selected':'')+'>'+esc(f.label)+'</option>').join('');
   let h='<div><h2 class="st-h">Cross-tabulation</h2><p class="muted">Based on the '+list.length+' entries in the current results; recalculates whenever Browse or the search changes. Replaces the Summary sheet.</p></div>';
   h+='<div class="st-ctl"><label>Rows <select id="pvRow">'+opt(rf.key)+'</select></label><label>Columns <select id="pvCol">'+opt(cf.key)+'</select></label><span class="seg2" role="group" aria-label="Values"><button type="button" data-pm="count" aria-pressed="'+(S.pivot.mode==='count')+'">Count</button><button type="button" data-pm="row" aria-pressed="'+(S.pivot.mode==='row')+'">Row %</button><button type="button" data-pm="per10k" aria-pressed="'+(S.pivot.mode==='per10k')+'"'+(per10kOK?'':' disabled title="Available when rows are Period or Work Title"')+'>Per 10k chars</button></span><label class="chk" for="inclNA2"><input type="checkbox" id="inclNA2"'+(S.inclNA?' checked':'')+'> Include unannotated</label><button type="button" class="btn sm" id="pvCopy">Copy as TSV</button></div>';
-  h+='<div id="copyFallback"></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">'+esc(rf.label)+' \\ '+esc(cf.label)+'</th>'+cv.map(v=>'<th>'+esc(optLabel(cf,v))+'</th>').join('')+'<th>Total</th></tr></thead><tbody>'+tb+'</tbody></table></div>';
+  h+='<div id="copyFallback"></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">'+esc(rf.label)+' \\ '+esc(cf.label)+'</th>'+cv.map(v=>'<th'+(naV(v)?' class="na"':'')+'>'+esc(optLabel(cf,v))+'</th>').join('')+'<th>Total</th></tr></thead><tbody>'+tb+'</tbody></table></div>';
   const works=new Map(); for(const r of activeRows()){ if(r.work&&dsOf(r)==='Main') works.set(r.work,(works.get(r.work)||0)+1); }
   const wl=[...works.keys()].sort((a,b)=>periodKey(wp.get(a))-periodKey(wp.get(b))||coll.compare(a,b));
   let sumC=0,sumN=0;
