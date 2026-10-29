@@ -1196,7 +1196,7 @@ async function gh(path,opt){
 function startOAuth(){
   const st=Math.random().toString(36).slice(2)+Date.now().toString(36);
   try{ sessionStorage.setItem('dedei.oauth',st); }catch(e){}
-  location.href='https://github.com/login/oauth/authorize?client_id='+encodeURIComponent(CFG.appClientId)+'&redirect_uri='+encodeURIComponent(location.origin+location.pathname)+'&state='+encodeURIComponent(st);
+  location.href='https://github.com/login/oauth/authorize?client_id='+encodeURIComponent(CFG.appClientId)+'&redirect_uri='+encodeURIComponent(location.origin+location.pathname.replace(/index\.html$/,''))+'&state='+encodeURIComponent(st);
 }
 async function finishOAuth(){
   const u=new URL(location.href); const code=u.searchParams.get('code'), st=u.searchParams.get('state'), err=u.searchParams.get('error');

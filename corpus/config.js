@@ -5,8 +5,8 @@ window.DEDEI_CONFIG = {
   owner: 'm-bian',          // GitHub account that owns the corpus repository
   repo: 'de-dei-corpus',    // the private repository holding data/ and imports/
   branch: 'main',
-  appClientId: '',          // Client ID of the GitHub App, e.g. 'Iv23li…'
-  authRelay: '',            // URL of the sign-in relay (relay/worker.js), e.g. 'https://dedei-auth.<you>.workers.dev'
+  appClientId: 'Iv23live3oqfPOoSBKCJ',   // Client ID of the GitHub App
+  authRelay: 'https://dedei-auth.bianmingyang1999.workers.dev',   // sign-in relay (relay/worker.js)
   bundle: 'corpus.json',    // published snapshot read by visitors, built by scripts/build.mjs
   pollSeconds: 60           // how often signed-in collaborators check GitHub for other people's changes
 };
