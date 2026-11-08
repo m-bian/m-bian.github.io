@@ -15,6 +15,7 @@
   --bg:#EDF1EF; --surface:#FAFBFA; --surface-2:#E3E9E6; --line:#C9D3CF; --line-soft:#DCE3E0;
   --ink:#141D1A; --ink-2:#44514D; --ink-3:#6B7974;
   --zhu:#BF3A1F; --zhu-ink:#FFFFFF; --zhu-soft:#F5DED6; --mark:#F1E3A2; --hl:#FBEBC8; --hl-bar:#C27D12; --na:#A3AEAA;
+  --vf:#2B6797; --vf-soft:#DCE7F1;
   --c1:#3953A4; --c2:#B07A1F; --c3:#237F72; --c4:#8A4C9E; --c5:#557F2E; --c6:#5F6F86; --c7:#B4527F; --c8:#84663F;
   --shadow:0 14px 36px rgba(20,29,26,.18),0 2px 6px rgba(20,29,26,.08);
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
@@ -25,7 +26,7 @@
   :root:not([data-theme="light"]){
     --bg:#111816; --surface:#171F1C; --surface-2:#212B28; --line:#34413C; --line-soft:#27312E;
     --ink:#E2E9E6; --ink-2:#A8B5B0; --ink-3:#83918B;
-    --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66;
+    --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66; --vf:#8DBBE6; --vf-soft:#1B2A37;
     --c1:#8EA6F0; --c2:#E0B460; --c3:#6CCBB9; --c4:#C79BDB; --c5:#A3CC78; --c6:#A6B4C9; --c7:#EE98BE; --c8:#CFAE84;
     --shadow:0 14px 36px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);
     color-scheme:dark;
@@ -34,7 +35,7 @@
 :root[data-theme="dark"]{
   --bg:#111816; --surface:#171F1C; --surface-2:#212B28; --line:#34413C; --line-soft:#27312E;
   --ink:#E2E9E6; --ink-2:#A8B5B0; --ink-3:#83918B;
-  --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66;
+  --zhu:#EE6A4C; --zhu-ink:#1B0D08; --zhu-soft:#3B231C; --mark:#4D4420; --hl:#3A2D16; --hl-bar:#E3A647; --na:#5E6B66; --vf:#8DBBE6; --vf-soft:#1B2A37;
   --c1:#8EA6F0; --c2:#E0B460; --c3:#6CCBB9; --c4:#C79BDB; --c5:#A3CC78; --c6:#A6B4C9; --c7:#EE98BE; --c8:#CFAE84;
   --shadow:0 14px 36px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);
   color-scheme:dark;
@@ -104,6 +105,53 @@ button:disabled{cursor:default;opacity:.45}
 .hl-tag{color:var(--hl-bar);font-weight:500}
 .btn.hlb{height:26px;padding:0 9px;font-size:12px}
 .btn.hlb[aria-pressed="true"]{background:var(--hl);border-color:var(--hl-bar);color:var(--ink)}
+/* "to be verified": machine-made entries not yet checked by an annotator */
+.vbadge{display:inline-block;margin-left:6px;padding:0 6px;border-radius:3px;border:1px dashed var(--vf);font:500 10px/15px var(--f-ui);color:var(--vf);background:var(--vf-soft);vertical-align:2px;white-space:nowrap}
+.vtag{color:var(--vf);font-weight:500}
+.btn.vfb{height:26px;padding:0 9px;font-size:12px;border-color:var(--vf);color:var(--vf);background:var(--vf-soft)}
+.btn.vfb:hover{background:var(--vf);color:var(--surface)}
+.tbv-only .tbv-n{font:12px var(--f-mono);color:var(--vf)}
+.tb-r .chk{white-space:nowrap}
+.tbv-only:has(input:checked){color:var(--ink)}
+.tbv-note{color:var(--vf)}
+.de-o{color:inherit}
+.dr-auto{margin:-8px 0 0;padding:7px 10px;border-left:3px solid var(--line);border-radius:3px;background:var(--surface-2);font-size:12.5px;line-height:1.5;color:var(--ink-2);max-width:66ch}
+.dr-auto.tbv{border-left-color:var(--vf);background:var(--vf-soft)}
+.dr-auto.tbv b{color:var(--vf)}
+.dr-sib{margin:-8px 0 0;font-size:12.5px;line-height:1.7}
+.dr-sib .linkbtn{font-size:12.5px}
+.tseg .opt{height:auto;min-height:26px;padding:2px 10px}
+.tseg .zh-s{font:13px var(--f-zh);margin-left:4px}
+.tseg .opt:not(.on) .zh-s b{color:var(--zhu)}
+.lf.split{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+details.dr-mr summary{cursor:pointer;list-style:none}
+details.dr-mr summary::-webkit-details-marker{display:none}
+details.dr-mr summary h3::before{content:"▸";font-size:10px;letter-spacing:0}
+details.dr-mr[open] summary h3::before{content:"▾"}
+.mr-b{display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.55}
+.mr-b p{margin:2px 0 0}
+.mr-ctx{font:14px/1.75 var(--f-zh);color:var(--ink-2)}
+.mr-sent{color:var(--ink);background:var(--mark);border-radius:2px}
+.mr-src,.mr-ex{font-size:12px}
+.mr-alt{margin:2px 0 0;padding-left:18px}
+.mr-conf{display:inline-block;margin-left:6px;padding:0 6px;border-radius:3px;font:500 10.5px/16px var(--f-ui);background:var(--surface-2);color:var(--ink-2)}
+.mr-conf.c-low{background:var(--zhu-soft);color:var(--zhu)}
+.choose{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choose button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);text-align:left;color:var(--ink);font-size:13px;line-height:1.5}
+.choose button:hover{border-color:var(--ink-2);background:var(--surface-2)}
+.choose button b{font-size:14px}
+.choose button span{color:var(--ink-2)}
+.txt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.txt-grid .wide{grid-column:1/-1}
+.txt-stats{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.txt-prev{margin:0;padding:8px 10px;border-radius:6px;background:var(--surface-2);font:14px/1.7 var(--f-zh);max-height:150px;overflow:auto}
+.txt-prev .de{font-weight:600}
+.runs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.runs li{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.runs .st{font:500 11px var(--f-mono);padding:0 6px;border-radius:3px;background:var(--surface-2);color:var(--ink-2)}
+.runs .st.done{background:var(--vf-soft);color:var(--vf)}
+.runs .st.failed{background:var(--zhu-soft);color:var(--zhu)}
+@media (max-width:640px){ .choose,.txt-grid{grid-template-columns:1fr} }
 .sheet.narrow{width:min(540px,100%)}
 #authBody p{margin:0;line-height:1.55}
 details.auth-alt summary{cursor:pointer;font-size:12.5px;color:var(--ink-2)}
@@ -187,7 +235,7 @@ ol.auth-steps li+li{margin-top:6px}
 .fchip .fv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .fchip button{flex:0 0 auto;width:20px;height:20px;border-radius:10px;border:0;background:transparent;color:var(--ink-2);line-height:1}
 .fchip button:hover{background:color-mix(in srgb,var(--zhu) 18%,transparent);color:var(--ink)}
-.tb-r{display:flex;align-items:center;gap:10px;margin-left:auto}
+.tb-r{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px 10px;margin-left:auto;min-width:0}
 .count{font:12px var(--f-mono);color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
 .banner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding-block:8px;background:color-mix(in srgb,var(--mark) 55%,var(--surface));border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink)}
 .banner b{font-weight:600}
@@ -411,7 +459,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
     <div class="actions">
       <span class="saving" id="saveState" hidden role="status">Saving to GitHub…</span>
       <label class="switch" id="annoWrap" hidden title="Edit annotations in the detail panel and in bulk"><input type="checkbox" id="anno"><span class="sw"></span><span>Annotate</span></label>
-      <button type="button" class="btn" id="bImport" hidden>Import xlsx</button>
+      <button type="button" class="btn" id="bImport" hidden>Import</button>
       <button type="button" class="btn primary" id="bNew" hidden>+ New entry</button>
       <div class="menu-wrap">
         <button type="button" class="btn" id="bMore" aria-haspopup="true" aria-expanded="false">More ▾</button>
@@ -466,6 +514,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
               <button type="button" data-sc="count" aria-pressed="false">Count</button>
             </span>
             <label class="chk" for="inclNA"><input type="checkbox" id="inclNA"> Include unannotated</label>
+            <span class="hint tbv-note" id="stripNote" hidden></span>
             <span class="sp"></span>
             <button type="button" class="linkbtn" id="stripToggle">Collapse</button>
           </div>
@@ -481,6 +530,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
           <div class="chips" id="chips"></div>
           <div class="tb-r">
             <label class="chk hl-only" for="hlOnly" id="hlOnlyWrap" hidden title="Entries highlighted by collaborators"><input type="checkbox" id="hlOnly"> Show only highlighted <span class="hl-n" id="hlN"></span></label>
+            <label class="chk tbv-only" for="tbvOnly" id="tbvOnlyWrap" hidden title="Machine-made entries an annotator has not checked yet"><input type="checkbox" id="tbvOnly"> Only to be verified <span class="tbv-n" id="tbvN"></span></label>
             <span class="count" id="count"></span>
             <button type="button" class="btn sm" id="bCols">Columns</button>
             <span class="hint">Show</span>
@@ -504,7 +554,7 @@ table.pv{border-collapse:collapse;width:max-content;min-width:100%;font-size:12.
 
 <div class="modal" id="mImport" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="impTitle">
-    <div class="sheet-h"><h2 id="impTitle">Import xlsx</h2><button type="button" class="icb" data-x="close" aria-label="Close">✕</button></div>
+    <div class="sheet-h"><h2 id="impTitle">Import</h2><button type="button" class="icb" data-x="close" aria-label="Close">✕</button></div>
     <div class="sheet-b" id="impBody"></div>
     <div class="sheet-f" id="impFoot"></div>
   </div>
@@ -582,7 +632,7 @@ const S={
   rows:new Map(),ready:false,ver:0,idc:0,
   fields:clone(DEFAULT_FIELDS),sources:{},
   facets:{},register:'Colloquial',dataset:'Main',q:'',regex:false,gq:null,sort:null,trash:false,
-  moreOpen:store.get('more',false),hlOnly:false,scale:store.get('scale','share'),inclNA:store.get('inclNA',true),
+  moreOpen:store.get('more',false),hlOnly:false,tbvOnly:false,autoCache:new Map(),mrOpen:false,scale:store.get('scale','share'),inclNA:store.get('inclNA',true),
   view:'table',showOrig:store.get('showOrig',true),showTrans:store.get('showTrans',true),colPref:store.get('cols',{}),
   stackBy:store.get('stackBy','use'),stripOpen:store.get('strip',true),
   selected:new Set(),list:[],renderLimit:150,rendered:0,cols:[],
@@ -594,6 +644,15 @@ const F=k=>S.fields.find(f=>f.key===k);
 const bump=()=>{S.ver++;};
 const val=(r,k)=>r[k]==null?'':String(r[k]).trim();
 const isNA=v=>v===''||v==='NA';
+/* Machine-made entries carry status "to be verified" until an annotator clears it. They are listed and marked
+   for everyone, but no statistic counts them: facet counts, the chart and the Statistics tab leave them out. */
+const TBV='to be verified';
+const isTBV=r=>!!r&&r.status===TBV;
+const statRow=r=>!isTBV(r);
+/* An entry records one 得. When its text has several, "target" says which one (1 = the first); only that one is red. */
+const deCount=t=>(String(t||'').match(/得/g)||[]).length;
+function targetOf(r){ const n=deCount(r&&r.text); if(n<=1) return n; const t=+(r&&r.target); return t>=1&&t<=n?t:0; }
+const ORD=n=>n+(n%100>=11&&n%100<=13?'th':(['th','st','nd','rd'][n%10]||'th'));
 const regOf=r=>val(r,'register')||'Colloquial';
 const dsOf=r=>val(r,'dataset')||'Main';
 function colVisible(f){ if(f.key==='translation'||f.key==='gloss'||SCOPE_KEYS.includes(f.key)) return false; return Object.prototype.hasOwnProperty.call(S.colPref,f.key)?!!S.colPref[f.key]:f.show!==false; }
@@ -743,9 +802,13 @@ function passGlobal(r,g,keys){
 function activeFacets(except){ return Object.entries(S.facets).filter(([k,set])=>k!==except&&set&&set.size); }
 function filtered(except){
   const g=S.gq, keys=globalKeys(), fs=activeFacets(except);
-  const hl=S.hlOnly&&hlVisible();
-  return scopeRows().filter(r=>(!hl||r.highlight)&&passGlobal(r,g,keys)&&fs.every(([k,set])=>set.has(val(r,k))));
+  const hl=S.hlOnly&&hlVisible(), tv=tbvOnly();
+  return scopeRows().filter(r=>(!hl||r.highlight)&&(!tv||isTBV(r))&&passGlobal(r,g,keys)&&fs.every(([k,set])=>set.has(val(r,k))));
 }
+function tbvOnly(){ return S.tbvOnly&&hlVisible(); }
+/* Rows a statistic may count. Facet counts follow the listed rows while "Only to be verified" is on,
+   so that the filters still help when checking those entries; the chart and Statistics never count them. */
+function countable(list){ return list.filter(statRow); }
 function anyFacet(){ return activeFacets(null).length>0; }
 function defaultCmp(a,b){ return periodKey(a.period)-periodKey(b.period)||coll.compare(regOf(a),regOf(b))||(dsOf(a)==='Main'?0:1)-(dsOf(b)==='Main'?0:1)||(a.seq||0)-(b.seq||0)||coll.compare(a.id,b.id); }
 function sortRows(list){
@@ -772,9 +835,10 @@ function matchRanges(s){
   } else { const low=s.toLowerCase(); let i=0; while(g.s&&(i=low.indexOf(g.s,i))>=0){ out.push([i,i+g.s.length]); i+=g.s.length; } }
   return out;
 }
-function hl(s,de){
-  s=String(s||''); const ranges=matchRanges(s); let html='',pos=0;
-  const seg=(t,m)=>{ let e=esc(t); if(de) e=e.replace(/得/g,'<span class="de">得</span>'); return m?'<mark>'+e+'</mark>':e; };
+/* target: which 得 is the recorded one (only it is red); 0 marks every 得. */
+function hl(s,de,target){
+  s=String(s||''); const ranges=matchRanges(s); let html='',pos=0,k=0;
+  const seg=(t,m)=>{ let e=esc(t); if(de) e=e.replace(/得/g,()=>{ k++; return !target||k===target?'<span class="de">得</span>':'<span class="de-o">得</span>'; }); return m?'<mark>'+e+'</mark>':e; };
   for(const [a,b] of ranges){ if(a<pos) continue; html+=seg(s.slice(pos,a),false)+seg(s.slice(a,b),true); pos=b; }
   return html+seg(s.slice(pos),false);
 }
@@ -808,12 +872,14 @@ function renderTop(){
   $('#resetFacets').hidden=!(anyFacet()||!defaultScope());
   const hv=hlVisible(); $('#hlOnlyWrap').hidden=!hv; $('#hlOnly').checked=S.hlOnly&&hv;
   if(hv){ let n=0; for(const r of S.rows.values()) if(r.highlight&&inScope(r)) n++; $('#hlN').textContent=n; }
+  let nv=0; for(const r of S.rows.values()) if(isTBV(r)&&inScope(r)) nv++;
+  $('#tbvOnlyWrap').hidden=!hv||(!nv&&!S.tbvOnly); $('#tbvOnly').checked=tbvOnly(); $('#tbvN').textContent=nv;
 }
 
 /* ---------- browse (facets) ---------- */
 function facetRow(f,sub){
-  const set=S.facets[f.key]; const cnt=new Map();
-  for(const r of filtered(f.key)){ const v=val(r,f.key); cnt.set(v,(cnt.get(v)||0)+1); }
+  const set=S.facets[f.key]; const cnt=new Map(); const tv=tbvOnly();
+  for(const r of filtered(f.key)){ if(!tv&&isTBV(r)) continue; const v=val(r,f.key); cnt.set(v,(cnt.get(v)||0)+1); }
   const present=new Set(); for(const r of scopeRows()) present.add(val(r,f.key));
   const opts=optionsFor(f).filter(v=>present.has(v)); if(present.has('')) opts.push('');
   if(set) for(const v of set) if(!opts.includes(v)) opts.push(v);
@@ -860,7 +926,9 @@ function renderStrip(){
   const sel=$('#stackBy'); const want=cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===S.stackBy?' selected':'')+'>'+esc(f.label)+'</option>').join('');
   if(sel.dataset.sig!==want){ sel.innerHTML=want; sel.dataset.sig=want; } sel.value=S.stackBy;
   if(!S.ready||S.offline){ $('#stripBody').innerHTML=''; $('#legend').innerHTML=''; return; }
-  const f=F(S.stackBy); const base=filtered('period');
+  const f=F(S.stackBy); const all0=filtered('period'); const base=countable(all0);
+  const nTbv=all0.length-base.length; const sn=$('#stripNote');
+  sn.textContent=nTbv?'Leaves out '+nTbv+' '+(nTbv===1?'entry':'entries')+' to be verified':''; sn.hidden=!nTbv;
   const per=new Map(), legendVals=new Map();
   for(const r of base){ const v=val(r,f.key); if(!S.inclNA&&isNA(v)) continue; const p=val(r,'period'); if(!per.has(p)) per.set(p,new Map()); const m=per.get(p); m.set(v,(m.get(v)||0)+1); legendVals.set(v,(legendVals.get(v)||0)+1); }
   const present=new Set(scopeRows().map(r=>val(r,'period')));
@@ -895,6 +963,7 @@ function renderChips(){
   if(S.register!=='Colloquial') c.push(chip('Register',S.register==='Both'?'Colloquial + Literary':S.register,'reg'));
   if(S.dataset!=='Main') c.push(chip('Dataset',S.dataset==='Both'?'Main + hai/ye + DE':S.dataset,'ds'));
   if(S.hlOnly&&hlVisible()) c.push(chip('Show','Highlighted only','hl'));
+  if(tbvOnly()) c.push(chip('Show','To be verified only','tbv'));
   if(S.q.trim()) c.push(chip(S.regex?'Regex':'Search',S.q.trim(),'q'));
   for(const [k,set] of activeFacets(null)){ const f=F(k); const vals=[...set].map(v=>optLabel(f,v)); c.push(chip(f?f.label:k,vals.length>3?vals.slice(0,2).join(', ')+' +'+(vals.length-2):vals.join(', '),'f:'+k)); }
   if(S.sort){ const f=F(S.sort.key); c.push(chip('Sort',(f?f.label:S.sort.key)+(S.sort.dir==='asc'?' ↑':' ↓'),'sort')); }
@@ -926,9 +995,9 @@ function thHTML(f){
 function cellHTML(f,r){
   const k=f.key, v=r[k];
   if(k==='text'){
-    const badge=r.sample?'<span class="sbadge">sample</span>':'';
+    const badge=(r.sample?'<span class="sbadge">sample</span>':'')+(isTBV(r)?'<span class="vbadge" title="Machine translation, glossing and annotation, not yet checked by an annotator. Not counted in statistics.">to be verified</span>':'');
     let h='<td class="c-text">';
-    if(S.showOrig) h+='<div class="zh">'+hl(v,true)+badge+'</div>';
+    if(S.showOrig) h+='<div class="zh">'+hl(v,true,targetOf(r))+badge+'</div>';
     if(S.showTrans) h+=r.translation?'<div class="tr'+(S.showOrig?'':' solo')+'">'+hl(r.translation,false)+(S.showOrig?'':badge)+'</div>':(S.showOrig?'':'<div class="tr none">No translation yet'+badge+'</div>');
     return h+'</td>';
   }
@@ -952,8 +1021,8 @@ function renderTable(){
   if(S.offline){ tv.innerHTML=emptyHTML('offline'); $('#count').textContent=''; return; }
   if(!S.ready){ tv.innerHTML=emptyHTML('loading'); $('#count').textContent=''; return; }
   const list=sortRows(filtered(null)); S.list=list.map(r=>r.id);
-  const total=scopeRows().length;
-  $('#count').textContent=countText(list.length,total);
+  const total=scopeRows().length; const nv=list.length-countable(list).length;
+  $('#count').textContent=countText(list.length,total)+(nv&&!tbvOnly()?' · '+nv+' to be verified':'');
   if(!S.rows.size&&!S.trash){ tv.innerHTML=emptyHTML('none'); return; }
   const cols=S.fields.filter(colVisible); const sel=S.writable&&S.annotate;
   const n=Math.min(list.length,Math.max(S.renderLimit,150));
@@ -1001,7 +1070,27 @@ function openColsPop(anchor){
 }
 
 /* ---------- drawer ---------- */
-function pickFields(r){ const o={}; for(const f of S.fields) o[f.key]=r&&r[f.key]!=null?String(r[f.key]):''; if(r&&!o.register) o.register='Colloquial'; if(r&&!o.dataset) o.dataset='Main'; return o; }
+function pickFields(r){ const o={}; for(const f of S.fields) o[f.key]=r&&r[f.key]!=null?String(r[f.key]):''; if(r&&!o.register) o.register='Colloquial'; if(r&&!o.dataset) o.dataset='Main'; o.target=r&&r.target?String(r.target):''; return o; }
+function siblingsOf(r){
+  if(!r||!r.text) return [];
+  const out=[]; for(const x of S.rows.values()) if(x.id!==r.id&&!x.deleted&&x.text===r.text&&(x.work||'')===(r.work||'')&&(x.section||'')===(r.section||'')) out.push(x);
+  return out.sort((a,b)=>targetOf(a)-targetOf(b));
+}
+function fmtDate(ts){ if(!ts) return ''; try{ return new Date(ts).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); }catch(e){ return ''; } }
+/* Public note on machine-made entries: what the model did and whether an annotator has checked it. */
+function autoLine(r){
+  const a=r.auto;
+  if(!a) return isTBV(r)?'<p class="dr-auto tbv"><b>To be verified.</b> Marked for checking; not counted in statistics until an annotator clears the mark.</p>':'';
+  const parts=[]; if(a.translate) parts.push('translation and glossing by '+a.translate); if(a.annotate) parts.push('Use of DE, Form and Force by '+a.annotate);
+  return '<p class="dr-auto'+(isTBV(r)?' tbv':'')+'">'+(isTBV(r)?'<b>To be verified.</b> ':'')+'Machine-made: '+esc(parts.join('; ')||'model output')+(a.at?' ('+esc(fmtDate(a.at))+')':'')+'. '
+    +(isTBV(r)?'An annotator has not checked it yet, so it is not counted in statistics.':'Checked'+(r.verifiedBy?' by @'+esc(r.verifiedBy):'')+(r.verifiedAt?' on '+esc(fmtDate(r.verifiedAt)):'')+'.')+'</p>';
+}
+function draftTarget(d){ const n=deCount(d.text); if(n<=1) return n; const t=+d.target; return t>=1&&t<=n?t:0; }
+function targetPicker(d){
+  const n=deCount(d.text); if(n<2) return '';
+  const pos=[]; for(let i=0;i<d.text.length;i++) if(d.text[i]==='得') pos.push(i);
+  return '<div class="lf wide"><span>Recorded 得 <span class="dim">(this entry describes one 得; only it is shown in red)</span></span><div class="seg tseg" role="group" aria-label="Recorded 得">'+pos.map((i,j)=>{ const k=String(j+1), on=d.target===k; return '<button type="button" class="opt'+(on?' on':'')+'" data-t="'+k+'" aria-pressed="'+on+'">'+ORD(j+1)+' <span class="zh-s">'+esc(d.text.slice(Math.max(0,i-2),i))+'<b>得</b>'+esc(d.text.slice(i+1,i+3))+'</span></button>'; }).join('')+'</div></div>';
+}
 function same(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
 function guard(fn){ if(S.dirty){ S.guardFn=fn; renderFooter(); const ft=$('.dr-foot'); if(ft) ft.scrollIntoView({block:'nearest'}); return; } fn(); }
 function openRow(id){
@@ -1043,8 +1132,17 @@ function renderDrawer(){
   const d=S.draft||pickFields(r); const ed=editable(); const idx=S.list.indexOf(S.openId);
   const anno=S.fields.filter(f=>f.type==='cat'&&f.group!=='source');
   const notes=S.fields.filter(f=>f.type!=='cat'&&f.group!=='source');
-  let h='<div class="dr-head"><div class="dr-pos">'+(S.isNew?'New entry':(idx>=0?(idx+1)+' / '+S.list.length:'Not in current results'))+(r.sample?' · sample':'')+(r.deleted?' · in trash':'')+(r.highlight&&hlVisible()&&!S.isNew?' · <span class="hl-tag" title="'+esc(r.highlightAt?fmtTime(r.highlightAt):'')+'">highlighted'+(r.highlightBy?' by @'+esc(r.highlightBy):'')+'</span>':'')+'</div><div class="dr-nav">'+(S.writable&&!S.isNew&&!r.deleted&&S.rows.has(S.openId)?'<button type="button" class="btn sm hlb" data-d="hl" aria-pressed="'+(!!r.highlight)+'" title="'+(r.highlight?'Remove the highlight':'Highlight this entry for your collaborators')+'">'+(r.highlight?'★ Highlighted':'☆ Highlight')+'</button>':'')+'<button type="button" class="icb" data-d="prev" aria-label="Previous entry"'+(S.isNew||idx<=0?' disabled':'')+'>↑</button><button type="button" class="icb" data-d="next" aria-label="Next entry"'+(S.isNew||idx<0||idx>=S.list.length-1?' disabled':'')+'>↓</button><button type="button" class="icb" data-d="close" aria-label="Close">✕</button></div></div>';
-  h+='<div class="dr-body" id="drBody"><div class="dr-src" id="drSrc">'+srcLine(d)+'</div><p class="dr-zh" id="drZh">'+(d.text?hl(d.text,true):'<span class="dim">(no main text yet)</span>')+'</p><div class="dr-gl" id="drGl"'+(d.gloss?'':' hidden')+'>'+glossBlock(d.gloss)+'</div><p class="dr-tr" id="drTr"'+(d.translation?'':' hidden')+'>'+esc(d.translation)+'</p>';
+  const live=!S.isNew&&!r.deleted&&S.rows.has(S.openId);
+  let h='<div class="dr-head"><div class="dr-pos">'+(S.isNew?'New entry':(idx>=0?(idx+1)+' / '+S.list.length:'Not in current results'))+(r.sample?' · sample':'')+(r.deleted?' · in trash':'')+(isTBV(r)&&!S.isNew&&!(S.writable&&live)?' · <span class="vtag">to be verified</span>':'')+(r.highlight&&hlVisible()&&!S.isNew?' · <span class="hl-tag" title="'+esc(r.highlightAt?fmtTime(r.highlightAt):'')+'">highlighted'+(r.highlightBy?' by @'+esc(r.highlightBy):'')+'</span>':'')+'</div><div class="dr-nav">'
+    +(S.writable&&live&&isTBV(r)?'<button type="button" class="btn sm vfb" data-d="verify" title="Clear the “to be verified” mark once the translation, glossing and annotation are checked">✓ Mark verified</button>':'')
+    +(S.writable&&live?'<button type="button" class="btn sm hlb" data-d="hl" aria-pressed="'+(!!r.highlight)+'" title="'+(r.highlight?'Remove the highlight':'Highlight this entry for your collaborators')+'">'+(r.highlight?'★ Highlighted':'☆ Highlight')+'</button>':'')+'<button type="button" class="icb" data-d="prev" aria-label="Previous entry"'+(S.isNew||idx<=0?' disabled':'')+'>↑</button><button type="button" class="icb" data-d="next" aria-label="Next entry"'+(S.isNew||idx<0||idx>=S.list.length-1?' disabled':'')+'>↓</button><button type="button" class="icb" data-d="close" aria-label="Close">✕</button></div></div>';
+  const tg=draftTarget(d);
+  h+='<div class="dr-body" id="drBody"><div class="dr-src" id="drSrc">'+srcLine(d)+'</div><p class="dr-zh" id="drZh">'+(d.text?hl(d.text,true,tg):'<span class="dim">(no main text yet)</span>')+'</p><div class="dr-gl" id="drGl"'+(d.gloss?'':' hidden')+'>'+glossBlock(d.gloss,deCount(d.text)>1?tg:0)+'</div><p class="dr-tr" id="drTr"'+(d.translation?'':' hidden')+'>'+esc(d.translation)+'</p>';
+  if(!S.isNew){
+    h+=autoLine(r);
+    const sib=siblingsOf(r);
+    if(sib.length) h+='<p class="dr-sib"><span class="dim">Other 得 in this sentence:</span> '+sib.map(s=>{ const t=targetOf(s); return '<button type="button" class="linkbtn" data-open="'+esc(s.id)+'">'+(t?ORD(t)+' 得':'得')+' · '+esc(s.use||'unannotated')+(isTBV(s)?' (to be verified)':'')+'</button>'; }).join(' ')+'</p>';
+  }
   if(ed){
     const regs=['Colloquial','Literary'].concat(optionsFor(F('register')).filter(v=>v!=='Colloquial'&&v!=='Literary'));
     h+='<details class="dr-edit"'+(S.isNew?' open':'')+'><summary>Source &amp; text</summary><div class="src-grid">'+
@@ -1055,6 +1153,8 @@ function renderDrawer(){
       '<label class="lf">Section<input id="d-section" data-f="section" value="'+esc(d.section)+'"></label>'+
       '<label class="lf wide">Time<input id="d-date" data-f="date" value="'+esc(d.date)+'" placeholder="e.g. 480-350 BCE"></label>'+
       '<label class="lf wide">Main Text<textarea id="d-text" class="zhin" data-f="text" rows="3">'+esc(d.text)+'</textarea></label>'+
+      '<div class="lf wide" id="tPick"'+(deCount(d.text)>1?'':' hidden')+'>'+targetPicker(d)+'</div>'+
+      splitOffer(r,d)+
       '<label class="lf wide">Glossing <span class="dim">(grammatical labels in CAPITALS display as small caps)</span><textarea id="d-gloss" data-f="gloss" rows="2" spellcheck="false">'+esc(d.gloss)+'</textarea></label>'+
       '<label class="lf wide">Translation (Context)<textarea id="d-translation" data-f="translation" rows="3">'+esc(d.translation)+'</textarea></label>'+
       '</div><datalist id="dl-period">'+optionsFor(F('period')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist><datalist id="dl-work">'+optionsFor(F('work')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist></details>';
@@ -1062,10 +1162,58 @@ function renderDrawer(){
   h+='<section class="dr-sec"><h3>Annotation</h3><div class="af-grid">'+anno.map(f=>'<div class="af-l">'+esc(f.label)+'</div><div class="af-v'+(ed?' ed':'')+'">'+(ed?annoControl(f,d[f.key]):(d[f.key]?(f.key===S.stackBy?'<span class="tag" style="--c:'+catColor(f,d[f.key])+'">'+esc(d[f.key])+'</span>':'<span class="'+(d[f.key]==='NA'?'dim':'')+'">'+esc(d[f.key])+'</span>'):'<span class="dim">Unannotated</span>'))+'</div>').join('')+'</div></section>';
   const noteHTML=notes.map(f=>ed?'<label class="lf">'+esc(f.label)+'<textarea data-f="'+esc(f.key)+'" rows="2">'+esc(d[f.key])+'</textarea></label>':(d[f.key]?'<div class="nf"><div class="af-l">'+esc(f.label)+'</div><p>'+esc(d[f.key])+'</p></div>':'')).join('');
   if(noteHTML.trim()) h+='<section class="dr-sec"><h3>Notes</h3><div class="notes">'+noteHTML+'</div></section>';
+  const showMr=!S.isNew&&r.auto&&AUTH.read;
+  if(showMr) h+='<details class="dr-sec dr-mr" id="drMr"'+(S.mrOpen?' open':'')+'><summary><h3>Model’s reasoning and context</h3></summary><div class="mr-b" id="mrBody"><span class="dim">Loading…</span></div></details>';
   h+='</div><div class="dr-foot" id="drFoot"></div>';
   const keepScroll=dr.hidden?0:($('#drBody')&&$('#drBody').scrollTop)||0;
   dr.innerHTML=h; dr.hidden=false; $('#drBody').scrollTop=keepScroll;
+  if(showMr){ const det=$('#drMr'), id=S.openId; det.addEventListener('toggle',()=>{ S.mrOpen=det.open; if(det.open) loadAuto(id); }); if(det.open) loadAuto(id); }
   renderFooter();
+}
+/* Offer to add entries for the other 得 of a sentence that has several, when they are not in the corpus yet. */
+function splitOffer(r,d){
+  if(S.isNew||!r||!r.id) return '';
+  const n=deCount(d.text); if(n<2) return '';
+  const have=new Set(siblingsOf(r).map(targetOf)); const t=+d.target; if(t) have.add(t);
+  const miss=[]; for(let k=1;k<=n;k++) if(!have.has(k)) miss.push(k);
+  if(!miss.length) return '';
+  return '<div class="lf wide split"><button type="button" class="btn sm" data-d="split"'+(t&&!S.dirty?'':' disabled title="Choose and save the recorded 得 first"')+'>Add entries for the other 得 ('+miss.map(ORD).join(', ')+')</button><span class="dim">Copies the source, text, glossing and translation; the annotation is left empty.</span></div>';
+}
+async function splitEntry(id){
+  const r=S.rows.get(id); if(!r) return; const n=deCount(r.text); const t=targetOf(r); if(!t){ toast('Choose and save the recorded 得 first'); return; }
+  const have=new Set(siblingsOf(r).map(targetOf)); have.add(t);
+  const now=Date.now(), who=S.myId||null; const jobs=[];
+  const base=String(r.key||'').replace(/#\d+$/,'')||(r.period+'|'+(r.work||'')+'|'+(r.section||'')+'|'+String(r.text).replace(/\s+/g,''));
+  for(let k=1;k<=n;k++){ if(have.has(k)) continue;
+    const row={period:r.period,register:r.register,dataset:r.dataset,date:r.date,work:r.work,section:r.section,text:r.text,target:k,gloss:r.gloss,translation:r.translation,seq:r.seq,key:base+'#'+k,createdAt:now,createdBy:who,updatedAt:now,updatedBy:who};
+    for(const kk of Object.keys(row)) if(row[kk]==null||row[kk]==='') delete row[kk];
+    jobs.push(row); }
+  const errs=await runPool(jobs,row=>putRow(genId(),row,{msg:'Add entries for the other 得 of a sentence'}));
+  if(errs.length) toastErr(errs[0],'Not added'); else toast('Added '+jobs.length+' '+(jobs.length===1?'entry':'entries')+' for the other 得');
+  renderDrawer(); schedule();
+}
+/* The model's record for a machine-made entry lives in data/auto/<id>.json in the private repository. */
+async function loadAuto(id){
+  const box=$('#mrBody'); if(!box) return;
+  if(!S.autoCache.has(id)){
+    try{ const f=await gh(REPO+'/contents/data/auto/'+encodeURIComponent(id)+'.json?ref='+encodeURIComponent(CFG.branch)); S.autoCache.set(id,JSON.parse(b64ToText(f.content))); }
+    catch(e){ S.autoCache.set(id,e&&e.status===404?{missing:true}:{error:true}); }
+  }
+  if(S.openId!==id) return; const b=$('#mrBody'); if(b) b.innerHTML=autoHTML(S.autoCache.get(id));
+}
+function autoHTML(a){
+  if(!a||a.missing) return '<span class="dim">No model record was saved for this entry.</span>';
+  if(a.error){ S.autoCache.clear(); return '<span class="dim">The model record could not be loaded. Close and reopen this section to try again.</span>'; }
+  const an=a.annotate||{}, tr=a.translate||{}; let h='';
+  if(a.context&&a.context.text){ const c=a.context; const s=c.text, i=c.at|0, j=i+(c.len|0); h+='<div class="mr-r"><div class="af-l">Context in the source</div><p class="mr-ctx">'+esc(s.slice(0,i))+'<span class="mr-sent">'+esc(s.slice(i,j))+'</span>'+esc(s.slice(j))+'</p>'+(a.source&&a.source.file?'<p class="dim mr-src">'+esc(a.source.file)+(a.source.section?' · '+esc(a.source.section):'')+(a.source.line?' · line '+esc(a.source.line):'')+'</p>':'')+'</div>'; }
+  if(an.use||an.rationale){
+    h+='<div class="mr-r"><div class="af-l">Annotation'+(an.model?' · '+esc(an.model):'')+'</div><p><b>'+esc([an.use,an.form,an.force].filter(Boolean).join(' · ')||'—')+'</b>'+(an.confidence?' <span class="mr-conf c-'+esc(an.confidence)+'">'+esc(an.confidence)+' confidence</span>':'')+'</p>'+(an.rationale?'<p>'+esc(an.rationale)+'</p>':'');
+    if(Array.isArray(an.alternatives)&&an.alternatives.length) h+='<p class="dim">Also possible:</p><ul class="mr-alt">'+an.alternatives.map(x=>'<li><b>'+esc([x.use,x.form,x.force].filter(Boolean).join(' · '))+'</b>'+(x.why?' — '+esc(x.why):'')+'</li>').join('')+'</ul>';
+    if(Array.isArray(an.exemplars)&&an.exemplars.length) h+='<p class="dim mr-ex">Compared with verified entries: '+an.exemplars.slice(0,12).map(x=>S.rows.has(x)?'<button type="button" class="linkbtn" data-open="'+esc(x)+'">'+esc(x)+'</button>':esc(x)).join(' ')+(an.exemplars.length>12?' …':'')+'</p>';
+    h+='</div>';
+  }
+  if(tr.notes||tr.model) h+='<div class="mr-r"><div class="af-l">Translation and glossing'+(tr.model?' · '+esc(tr.model):'')+'</div>'+(tr.notes?'<p>'+esc(tr.notes)+'</p>':'<p class="dim">No notes.</p>')+'</div>';
+  return h||'<span class="dim">The model record is empty.</span>';
 }
 /* ---------- interlinear gloss ----------
    Stored as plain text. Grammatical labels are written in capitals (Leipzig rule 3) and shown as small caps;
@@ -1094,10 +1242,11 @@ function labelMeaning(l){
   const m=l.match(/^([123])(SG|PL)?$/); if(m) return PERSON[m[1]]+(m[2]?' '+GLOSS_ABBR[m[2]]:'');
   return '';
 }
-function glossBlock(g){
+/* target: in a sentence with several 得, the DE gloss of the recorded one is shown in red. */
+function glossBlock(g,target){
   g=String(g||'').trim(); if(!g) return '';
-  const parts=glossParts(g); const used=new Map();
-  const html=parts.map(p=>{ if(!p.lab) return esc(p.t); const mean=labelMeaning(p.t); if(mean&&!used.has(p.t)) used.set(p.t,mean); return '<span class="sc"'+(mean?' title="'+esc(mean)+'"':'')+'>'+esc(p.t)+'</span>'; }).join('');
+  const parts=glossParts(g); const used=new Map(); let k=0;
+  const html=parts.map(p=>{ if(!p.lab) return esc(p.t); const mean=labelMeaning(p.t); if(mean&&!used.has(p.t)) used.set(p.t,mean); const t=p.t==='DE'&&target&&++k===target; return '<span class="sc'+(t?' de':'')+'"'+(mean?' title="'+esc(mean)+'"':'')+'>'+esc(p.t)+'</span>'; }).join('');
   const key=[...used.entries()].map(([l,mn])=>'<b class="sc">'+esc(l)+'</b> '+esc(mn)).join(' · ');
   return '<p class="gl">'+html+'</p>'+(key?'<p class="abbr">'+key+'</p>':'');
 }
@@ -1125,9 +1274,11 @@ function onDraftChange(){
   S.dirty=!same(S.draft,S.orig);
   const d=S.draft;
   const src=$('#drSrc'); if(src) src.innerHTML=srcLine(d);
-  const zh=$('#drZh'); if(zh) zh.innerHTML=d.text?hl(d.text,true):'<span class="dim">(no main text yet)</span>';
+  const tg=draftTarget(d);
+  const zh=$('#drZh'); if(zh) zh.innerHTML=d.text?hl(d.text,true,tg):'<span class="dim">(no main text yet)</span>';
   const tr=$('#drTr'); if(tr){ tr.textContent=d.translation; tr.hidden=!d.translation; }
-  const gl=$('#drGl'); if(gl){ gl.innerHTML=glossBlock(d.gloss); gl.hidden=!d.gloss; }
+  const gl=$('#drGl'); if(gl){ gl.innerHTML=glossBlock(d.gloss,deCount(d.text)>1?tg:0); gl.hidden=!d.gloss; }
+  const tp=$('#tPick'); if(tp){ const sig=deCount(d.text)+'|'+d.text+'|'+d.target; if(tp.dataset.sig!==sig){ tp.dataset.sig=sig; tp.innerHTML=targetPicker(d); tp.hidden=deCount(d.text)<2; } }
   renderFooter();
 }
 function cleanDraft(d){
@@ -1136,6 +1287,7 @@ function cleanDraft(d){
   if(!o.register) o.register='Colloquial';
   if(!o.dataset) o.dataset='Main';
   o.period=normPeriod(o.period); o.date=normDate(o.date);
+  const n=deCount(o.text), t=+d.target; o.target=n>1&&t>=1&&t<=n?String(t):'';
   return o;
 }
 function nextSeq(period,reg){ let m=0; for(const r of S.rows.values()) if(r.period===period&&regOf(r)===reg&&(r.seq||0)>m) m=r.seq; return m+1; }
@@ -1146,16 +1298,20 @@ async function saveOpen(){
   S.saving=true; renderFooter();
   try{
     let row;
+    const fixTarget=o=>{ if(!('target' in o)) return o; const t=+o.target; o.target=t>=1?t:null; return o; };
     if(S.isNew){
-      row=normalizeAnno(Object.assign({createdAt:now,createdBy:who,seq:nextSeq(d.period,d.register),key:''},d,{updatedAt:now,updatedBy:who}));
+      row=fixTarget(normalizeAnno(Object.assign({createdAt:now,createdBy:who,seq:nextSeq(d.period,d.register),key:''},d,{updatedAt:now,updatedBy:who})));
+      if(row.target==null) delete row.target;
       await putRow(id,row,{msg:'Add entry'});
     } else {
       /* Only the fields changed in this panel are sent; the rest of the entry stays as it is in the repository. */
       const changed={}; for(const k of Object.keys(d)) if(!eqv(d[k],S.orig[k])) changed[k]=d[k];
       const cur=stripId(S.rows.get(id)||{});
-      row=normalizeAnno(Object.assign({},cur,changed,{updatedAt:now,updatedBy:who}));
+      row=fixTarget(normalizeAnno(Object.assign({},cur,changed,{updatedAt:now,updatedBy:who})));
       const patch={}, base={};
-      for(const k of Object.keys(row)){ if(eqv(row[k],cur[k])) continue; patch[k]=row[k]; base[k]=(k in changed)?S.orig[k]:cur[k]; }
+      /* The panel holds target as text; the file stores a number, so the base it is compared with must be one too. */
+      const origVal=k=>k==='target'?(S.orig.target?+S.orig.target:null):S.orig[k];
+      for(const k of Object.keys(row)){ if(eqv(row[k],cur[k])) continue; patch[k]=row[k]; base[k]=(k in changed)?origVal(k):cur[k]; }
       if(Object.keys(patch).some(k=>!META_KEYS.has(k))) await enqueue({t:'patch',id,patch,base,msg:'Edit entry'});
     }
     const nd=cleanDraft(S.rows.get(id)||row);
@@ -1186,8 +1342,9 @@ const CFG=Object.assign({owner:'m-bian',repo:'de-dei-corpus',branch:'main',appCl
 const API='https://api.github.com';
 const REPO='/repos/'+CFG.owner+'/'+CFG.repo;
 const ENTRY_DIR='data/entries/', META_DIR='data/meta/';
-const META_KEYS=new Set(['createdAt','createdBy','updatedAt','updatedBy','deletedAt','deletedBy','highlight','highlightBy','highlightAt']);
-const ENTRY_ORDER=DEFAULT_FIELDS.map(f=>f.key).concat(['highlight','highlightBy','highlightAt','comment','sample','seq','key','deleted','deletedAt','deletedBy','createdAt','createdBy','updatedAt','updatedBy']);
+const META_KEYS=new Set(['createdAt','createdBy','updatedAt','updatedBy','deletedAt','deletedBy','highlight','highlightBy','highlightAt','status','verifiedBy','verifiedAt']);
+/* Key order of an entry file. The annotation pipeline (diachronic-semantics-workflow) writes the same order. */
+const ENTRY_ORDER=DEFAULT_FIELDS.map(f=>f.key).flatMap(k=>k==='text'?['text','target']:[k]).concat(['status','verifiedBy','verifiedAt','auto','highlight','highlightBy','highlightAt','comment','sample','seq','key','deleted','deletedAt','deletedBy','createdAt','createdBy','updatedAt','updatedBy']);
 const eqv=(a,b)=>JSON.stringify(a==null?'':a)===JSON.stringify(b==null?'':b);
 function stripId(row){ const o=Object.assign({},row); delete o.id; return o; }
 /* In a patch, null removes the field. */
@@ -1469,6 +1626,13 @@ async function setHighlight(ids,on){
   if(errs.length) toastErr(errs[0],on?'Not highlighted':'Highlight not removed');
   else toast((on?'Highlighted ':'Removed the highlight from ')+ids.length+' '+(ids.length===1?'entry':'entries'));
 }
+async function setVerified(ids,on){
+  const now=Date.now(); ids=ids.filter(id=>{ const r=S.rows.get(id); return r&&(on?isTBV(r):!isTBV(r)); });
+  if(!ids.length){ toast(on?'None of these entries is marked to be verified':'These entries are already marked to be verified'); return; }
+  const errs=await runPool(ids,id=>patchRow(id,on?{status:null,verifiedBy:S.myId||null,verifiedAt:now}:{status:TBV,verifiedBy:null,verifiedAt:null},on?'Mark verified':'Mark to be verified'));
+  if(errs.length) toastErr(errs[0],'Not changed');
+  else toast((on?'Marked ':'Marked ')+ids.length+' '+(ids.length===1?'entry':'entries')+(on?' as verified; '+(ids.length===1?'it now counts':'they now count')+' in statistics':' to be verified'));
+}
 async function trashIds(ids){
   const now=Date.now(); const errs=await runPool(ids,id=>patchRow(id,{deleted:true,deletedAt:now,deletedBy:S.myId||null},'Move to trash'));
   if(errs.length) toastErr(errs[0],'Some entries were not moved to trash');
@@ -1532,7 +1696,7 @@ function renderBulk(){
   const cats=S.fields.filter(f=>f.type==='cat');
   const fk=(S.bulkField&&F(S.bulkField))?S.bulkField:'use';
   b.dataset.mode='edit'; b.dataset.n=String(n);
-  b.innerHTML='<span><b>'+n+'</b> selected</span><label>Set <select id="bkField" aria-label="Field">'+cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===fk?' selected':'')+'>'+esc(f.label)+'</option>').join('')+'</select></label><label>to <input id="bkVal" list="bkList" placeholder="Pick or type" aria-label="Value"></label><datalist id="bkList"></datalist><button type="button" class="bb zhu" data-b="apply">Apply</button><span class="vs"></span><button type="button" class="bb" data-b="hl-on">☆ Highlight</button><button type="button" class="bb" data-b="hl-off">Remove highlight</button><span class="vs"></span><button type="button" class="bb" data-b="trash">Move to trash</button><button type="button" class="bb" data-b="none">Clear selection</button>';
+  b.innerHTML='<span><b>'+n+'</b> selected</span><label>Set <select id="bkField" aria-label="Field">'+cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===fk?' selected':'')+'>'+esc(f.label)+'</option>').join('')+'</select></label><label>to <input id="bkVal" list="bkList" placeholder="Pick or type" aria-label="Value"></label><datalist id="bkList"></datalist><button type="button" class="bb zhu" data-b="apply">Apply</button><span class="vs"></span><button type="button" class="bb" data-b="hl-on">☆ Highlight</button><button type="button" class="bb" data-b="hl-off">Remove highlight</button><span class="vs"></span><button type="button" class="bb" data-b="vf-on" title="Clear the “to be verified” status">✓ Mark verified</button><button type="button" class="bb" data-b="vf-off">Mark to be verified</button><span class="vs"></span><button type="button" class="bb" data-b="trash">Move to trash</button><button type="button" class="bb" data-b="none">Clear selection</button>';
   fillBulkList();
 }
 function fillBulkList(){ const f=F($('#bkField').value); S.bulkField=f.key; $('#bkList').innerHTML=optionsFor(f).map(v=>'<option value="'+esc(v)+'">').join(''); }
@@ -1585,8 +1749,132 @@ function matchField(label){
 }
 function slug(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,40)||'field'; }
 const IMP={};
-function resetImport(){ Object.assign(IMP,{file:null,fileName:'',sheets:[],dup:'skip',dropSamples:true,plan:null,busy:false,done:null,err:''}); }
+function resetImport(){ Object.assign(IMP,{mode:null,file:null,fileName:'',sheets:[],dup:'skip',dropSamples:true,plan:null,busy:false,done:null,err:''}); TX.file=null; TX.text=''; TX.stats=null; TX.err=''; TX.busy=false; TX.done=null; }
 function openImport(){ resetImport(); $('#mImport').hidden=false; renderImport(); }
+
+/* ---------- text for machine annotation ----------
+   A plain-text source is committed under sources/ together with a request under requests/. A GitHub Action in this
+   repository runs the annotation pipeline (m-bian/diachronic-semantics-workflow) on it and commits the new entries,
+   each marked "to be verified". The preview below splits the text with the same rules as the pipeline. */
+const TX={file:null,name:'',text:'',enc:'',stats:null,meta:{work:'',section:'',period:'',register:'Colloquial',dataset:'Main',date:''},model:'',checkOnly:false,busy:false,done:null,err:'',config:undefined,runs:undefined,blobCache:new Map()};
+const HEAD_RE=/^\s*(?:#{1,6}\s*(.+?)\s*#*|(第[一二三四五六七八九十百千零〇两\d]+[回章卷篇节折出][^。！？!?]{0,40}))\s*$/;
+function decodeText(buf){
+  const u=new Uint8Array(buf);
+  if(u[0]===0xFF&&u[1]===0xFE) return {text:new TextDecoder('utf-16le').decode(u.subarray(2)),enc:'UTF-16LE'};
+  if(u[0]===0xFE&&u[1]===0xFF) return {text:new TextDecoder('utf-16be').decode(u.subarray(2)),enc:'UTF-16BE'};
+  try{ return {text:new TextDecoder('utf-8',{fatal:true}).decode(u).replace(/^﻿/,''),enc:'UTF-8'}; }catch(e){}
+  try{ return {text:new TextDecoder('gb18030',{fatal:true}).decode(u),enc:'GB18030'}; }catch(e){}
+  try{ return {text:new TextDecoder('big5',{fatal:true}).decode(u),enc:'Big5'}; }catch(e){}
+  return null;
+}
+function splitSentences(p){
+  const out=[]; const re=/[^。！？!?]+(?:[。！？!?]+[”’」』）)》〉"']*|$)|[。！？!?]+[”’」』）)》〉"']*/g; let m;
+  while((m=re.exec(p))){ let s=m[0].trim(); if(!s) continue;
+    if([...s].length>150){ const parts=s.split(/(?<=[；;])/); for(const x of parts) if(x.trim()) out.push(x.trim()); } else out.push(s); }
+  return out;
+}
+function parseText(text){
+  const lines=text.replace(/\r\n?/g,'\n').split('\n'); let sections=0, paras=0, sents=0, withDE=0, de=0; const sample=[];
+  for(const ln of lines){ if(!ln.trim()) continue; if(HEAD_RE.test(ln)){ sections++; continue; } paras++;
+    for(const s of splitSentences(ln)){ sents++; const n=deCount(s); if(n){ withDE++; de+=n; if(sample.length<4) sample.push(s); } } }
+  const han=(text.match(/[㐀-鿿豈-﫿\u{20000}-\u{3134F}]/gu)||[]).length;
+  return {sections,paras,sents,withDE,de,han,sample};
+}
+async function loadPipelineInfo(force){
+  if(!AUTH.read) return;
+  if(TX.config===undefined||force){ try{ const f=await gh(REPO+'/contents/pipeline.config.json?ref='+encodeURIComponent(CFG.branch)); TX.config=JSON.parse(b64ToText(f.content)); }catch(e){ TX.config=null; } }
+  try{
+    const list=await gh(REPO+'/contents/requests?ref='+encodeURIComponent(CFG.branch));
+    const files=(Array.isArray(list)?list:[]).filter(x=>x.type==='file'&&/\.json$/.test(x.name)).sort((a,b)=>b.name.localeCompare(a.name)).slice(0,6);
+    TX.runs=await Promise.all(files.map(async x=>{ if(!TX.blobCache.has(x.sha)){ const b=await gh(REPO+'/git/blobs/'+x.sha); TX.blobCache.set(x.sha,JSON.parse(b64ToText(b.content))); } return TX.blobCache.get(x.sha); }));
+  }catch(e){ TX.runs=e&&e.status===404?[]:null; }
+  if(IMP.mode==='text'&&!$('#mImport').hidden) renderImport();
+}
+function modelChoices(){
+  const c=TX.config; if(!c||!c.models) return [];
+  const label=k=>{ const m=c.models[k]; return m?(m.label||k):k; };
+  const d=c.defaults||{}; const out=[{v:'',l:'Default'+(d.translate||d.annotate?' ('+(d.translate===d.annotate?label(d.translate):'translation: '+label(d.translate)+'; annotation: '+label(d.annotate))+')':'')}];
+  for(const [k,p] of Object.entries(c.presets||{})) out.push({v:k,l:(p.label||k)});
+  for(const k of Object.keys(c.models)) out.push({v:k,l:label(k)+' (both steps)'});
+  return out;
+}
+function workMeta(w){
+  const m={period:new Map(),register:new Map(),date:new Map()};
+  for(const r of S.rows.values()){ if(r.deleted||r.work!==w) continue; for(const k of ['period','register','date']){ const v=val(r,k); if(v) m[k].set(v,(m[k].get(v)||0)+1); } }
+  const top=mp=>{ let b='',n=0; for(const [v,c] of mp) if(c>n){ b=v; n=c; } return b; };
+  return {period:top(m.period),register:top(m.register),date:top(m.date)};
+}
+function runsHTML(){
+  if(TX.runs===undefined) return '<p class="muted">Loading recent runs…</p>';
+  if(TX.runs===null) return '<p class="muted">Recent runs could not be loaded.</p>';
+  if(!TX.runs.length) return '<p class="muted">No text has been submitted yet.</p>';
+  return '<ul class="runs">'+TX.runs.map(q=>{ const r=q.result||{}; const st=q.status||'queued';
+    const what=st==='done'?(q.checkOnly?'checked: '+(r.sentences||0)+' sentences, '+(r.de||0)+' 得':'added '+(r.added||0)+(r.duplicates?', '+r.duplicates+' already in the corpus':'')+(r.failed?', '+r.failed+' failed':'')):st==='failed'?esc(q.error||'see the Actions log'):'waiting for the run';
+    return '<li><span class="st '+esc(st)+'">'+esc(st)+'</span><b>'+esc(q.sourceName||q.source||q.id)+'</b><span class="dim">'+esc((q.meta&&q.meta.work)||'')+' · '+esc(fmtTime(q.createdAt))+(q.createdBy?' · @'+esc(q.createdBy):'')+'</span><span>'+what+'</span></li>'; }).join('')+'</ul>';
+}
+function renderTextImport(){
+  const bodyEl=$('#impBody'), foot=$('#impFoot');
+  if(TX.busy){ bodyEl.innerHTML='<div class="prog"><div>Uploading the text and the request…</div></div>'; foot.innerHTML=''; return; }
+  if(TX.done){
+    bodyEl.innerHTML='<div class="prog"><h3 class="st-h">Submitted</h3><p>The text is saved as <code>'+esc(TX.done.source)+'</code>. '+(TX.done.checkOnly?'The run will only count sentences and 得; no entries are added.':'The annotation run starts on GitHub within a minute or two. New entries appear in the table marked <span class="vbadge">to be verified</span> when it finishes; larger texts take longer.')+'</p><p class="muted">Its progress is listed under “Recent runs” the next time you open Import → Plain text.</p></div>';
+    foot.innerHTML='<button type="button" class="btn primary" data-x="close">Done</button>'; return;
+  }
+  const m=TX.meta; const st=TX.stats; const choices=modelChoices();
+  const regs=['Colloquial','Literary'].concat(optionsFor(F('register')).filter(v=>v!=='Colloquial'&&v!=='Literary'));
+  let h='';
+  if(!TX.text){
+    h+='<label class="drop" id="drop"><input type="file" id="txtFile" accept=".txt,text/plain"><b>Choose or drop a plain-text file</b><span>One paragraph per line. Lines starting with # (e.g. “# 第一回”), or chapter lines such as “第三回 …”, start a new Section. UTF-8, GB18030/GBK and Big5 are read; the copy saved in the repository is UTF-8.</span></label>'+(TX.err?'<p class="err">'+esc(TX.err)+'</p>':'');
+  } else {
+    h+='<p class="muted"><b style="color:var(--ink)">'+esc(TX.name)+'</b> · '+esc(TX.enc)+'</p>';
+    h+='<div class="txt-stats"><span><b>'+st.de+'</b> 得 in <b>'+st.withDE+'</b> sentences</span><span>'+st.sents+' sentences</span><span>'+st.paras+' paragraphs</span><span>'+st.sections+' section headings</span><span>'+st.han.toLocaleString('en-US')+' Chinese characters</span></div>';
+    if(st.sample.length) h+='<p class="txt-prev">'+st.sample.map(s=>hl(s,true,0)).join('<br>')+'</p>';
+    if(!st.de) h+='<p class="err">This text has no 得, so the run would add no entries.</p>';
+  }
+  h+='<div class="txt-grid">'+
+    '<label class="lf">Work Title<input data-tx="work" list="dl-twork" value="'+esc(m.work)+'" placeholder="e.g. Xiyouji"></label>'+
+    '<label class="lf">Section<input data-tx="section" value="'+esc(m.section)+'" placeholder="Used when the text has no headings"></label>'+
+    '<label class="lf">Period<input data-tx="period" list="dl-tper" value="'+esc(m.period)+'" placeholder="e.g. 16th Century CE"></label>'+
+    '<label class="lf">Time<input data-tx="date" value="'+esc(m.date)+'" placeholder="e.g. 1592 CE"></label>'+
+    '<label class="lf">Register<select data-tx="register">'+regs.map(v=>'<option'+(v===m.register?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
+    '<label class="lf">Dataset<select data-tx="dataset">'+[...new Set(['Main','hai/ye + DE'].concat(optionsFor(F('dataset'))))].map(v=>'<option'+(v===m.dataset?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
+    '<label class="lf wide">Models'+(choices.length?'<select id="txModel">'+choices.map(c=>'<option value="'+esc(c.v)+'"'+(c.v===TX.model?' selected':'')+'>'+esc(c.l)+'</option>').join('')+'</select>':'<span class="dim">'+(TX.config===undefined?'Loading the pipeline settings…':'No pipeline.config.json in the repository yet; the run will use its built-in default. See the README, “Machine annotation”.')+'</span>')+'</label>'+
+    '<label class="chk wide"><input type="checkbox" id="txCheck"'+(TX.checkOnly?' checked':'')+'> Check only: count sentences and 得 on GitHub, without calling a model or adding entries</label>'+
+    '</div><datalist id="dl-twork">'+optionsFor(F('work')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist><datalist id="dl-tper">'+optionsFor(F('period')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist>';
+  h+='<p class="muted">The pipeline translates each sentence, glosses it word by word and suggests Use of DE, Form and Force for every 得, one entry per 得. Flavor and the other fields are left for annotators. Sentences already in the corpus for this work are skipped.</p>';
+  h+='<div><h3 class="st-h" style="font-size:13px">Recent runs</h3>'+runsHTML()+'</div>';
+  bodyEl.innerHTML=h;
+  const ready=TX.text&&st&&st.de&&m.work.trim()&&m.period.trim();
+  foot.innerHTML='<span class="grow">'+(TX.text&&!ready&&st&&st.de?'Fill in Work Title and Period':'')+'</span>'+(TX.text?'<button type="button" class="btn" data-x="txreset">Choose another file</button>':'<button type="button" class="btn" data-x="reset">Back</button>')+'<button type="button" class="btn zhu" data-x="txcommit"'+(ready?'':' disabled')+'>'+(TX.checkOnly?'Submit for checking':'Submit for annotation')+'</button>';
+}
+async function readText(file){
+  TX.err=''; try{
+    const d=decodeText(await file.arrayBuffer());
+    if(!d){ TX.err='This file could not be read as UTF-8, GB18030 or Big5 text.'; renderImport(); return; }
+    TX.file=file; TX.name=file.name; TX.text=d.text.replace(/\r\n?/g,'\n'); TX.enc=d.enc; TX.stats=parseText(TX.text);
+  }catch(e){ TX.err='This file could not be read.'; }
+  renderImport();
+}
+function textPath(name,d){
+  const p=n=>String(n).padStart(2,'0');
+  const safe=String(name||'text.txt').replace(/[\\/:*?"<>|\u0000-\u001f\s]+/g,'_').replace(/^\.+/,'').slice(0,100)||'text.txt';
+  return 'sources/'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+'_'+(/\.txt$/i.test(safe)?safe:safe+'.txt');
+}
+async function commitText(){
+  const m=TX.meta; if(!TX.text||!m.work.trim()||!m.period.trim()) return;
+  TX.busy=true; renderImport();
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  const id='t'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds())+'-'+Math.random().toString(36).slice(2,6);
+  const source=textPath(TX.name,d);
+  const meta={work:m.work.trim(),section:m.section.trim(),period:normPeriod(m.period),register:m.register||'Colloquial',dataset:m.dataset||'Main',date:normDate(m.date)};
+  const req={id,createdAt:d.getTime(),createdBy:S.myId||null,status:'queued',source,sourceName:TX.name,encoding:TX.enc,meta,model:TX.model||'',checkOnly:!!TX.checkOnly,preview:{sentences:TX.stats.sents,withDE:TX.stats.withDE,de:TX.stats.de}};
+  const toB64=s=>bufToB64(new TextEncoder().encode(s));
+  const msg=(TX.checkOnly?'Submit text for checking: ':'Submit text for machine annotation: ')+TX.name;
+  try{
+    await Promise.all([enqueue({t:'file',path:source,b64:toB64(TX.text.endsWith('\n')?TX.text:TX.text+'\n'),msg}),enqueue({t:'file',path:'requests/'+id+'.json',b64:toB64(JSON.stringify(req,null,2)+'\n'),msg})]);
+    TX.done={source,checkOnly:req.checkOnly}; TX.runs=undefined;
+  }catch(e){ toastErr(e,'Not submitted'); }
+  TX.busy=false; renderImport();
+}
 function closeModal(id){ if(id==='mImport'&&IMP.busy) return; $('#'+id).hidden=true; }
 /* A sheet may hold several tables, each starting with its own header row (a row with a “Main Text” cell).
    Columns are matched by header label across all tables of the sheet; unlabeled columns by position. */
@@ -1665,6 +1953,12 @@ function planImport(){
 function sampleCount(){ let n=0; for(const r of S.rows.values()) if(r.sample&&!r.deleted) n++; return n; }
 function renderImport(){
   const bodyEl=$('#impBody'), foot=$('#impFoot');
+  $('#impTitle').textContent=IMP.mode==='xlsx'?'Import a spreadsheet':IMP.mode==='text'?'Import plain text for machine annotation':'Import';
+  if(!IMP.mode){
+    bodyEl.innerHTML='<div class="choose"><button type="button" data-imp="xlsx"><b>Spreadsheet</b><span>.xlsx, .xls or .csv with existing entries and annotations, e.g. the DE_DEI Data Set workbook. Entries are added as they are.</span></button><button type="button" data-imp="text"><b>Plain text</b><span>A .txt source. A model translates, glosses and annotates Use of DE, Form and Force for every 得; the new entries are marked “to be verified” until an annotator checks them.</span></button></div>';
+    foot.innerHTML='<button type="button" class="btn" data-x="close">Cancel</button>'; return;
+  }
+  if(IMP.mode==='text'){ renderTextImport(); return; }
   if(IMP.busy){ bodyEl.innerHTML='<div class="prog"><div id="progT">Writing to the corpus…</div><div class="bar"><i id="progB"></i></div><p class="muted">Keep this page open until the import finishes.</p></div>'; foot.innerHTML=''; return; }
   if(IMP.done){
     const d=IMP.done;
@@ -1739,15 +2033,17 @@ async function exportXlsx(mode){
   if(!S.downloads){ toast('Downloads are not available in this view'); return; }
   let X; try{ X=await loadXLSX(); }catch(e){ toast('The spreadsheet writer could not load'); return; }
   const wb=X.utils.book_new(); const today=new Date().toISOString().slice(0,10);
+  /* Which 得 an entry records, and the "to be verified" status, go into extra columns when any exported entry has them. */
+  const extras=rows=>[{label:'Recorded 得',get:r=>deCount(r.text)>1&&targetOf(r)?ORD(targetOf(r)):''},{label:'Status',get:r=>r.status||''}].filter(x=>rows.some(r=>x.get(r)));
   if(mode==='filtered'){
-    const rows=sortRows(filtered(null)); const cols=S.fields;
-    X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([cols.map(f=>f.label)].concat(rows.map(r=>cols.map(f=>f.key==='register'?regOf(r):f.key==='dataset'?dsOf(r):(r[f.key]==null?'':r[f.key]))))),'DE_DEI');
+    const rows=sortRows(filtered(null)); const cols=S.fields; const ex=extras(rows);
+    X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([cols.map(f=>f.label).concat(ex.map(x=>x.label))].concat(rows.map(r=>cols.map(f=>f.key==='register'?regOf(r):f.key==='dataset'?dsOf(r):(r[f.key]==null?'':r[f.key])).concat(ex.map(x=>x.get(r)))))),'DE_DEI');
   } else {
-    const rows=activeRows().sort(defaultCmp); const cols=S.fields.filter(f=>f.key!=='period'&&!SCOPE_KEYS.includes(f.key));
+    const rows=activeRows().sort(defaultCmp); const cols=S.fields.filter(f=>f.key!=='period'&&!SCOPE_KEYS.includes(f.key)); const ex=extras(rows);
     const groups=new Map(); for(const r of rows){ const ds=dsOf(r); const k=(r.period||'Unassigned')+' ('+(ds!=='Main'?(DS_SHEET[ds]||ds):regOf(r))+')'; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(r); }
     const used=new Set();
     for(const [k,list] of groups){ let n=k.replace(/[\[\]:*?\/\\]/g,'-').slice(0,31); let j=2; while(used.has(n)){ n=n.slice(0,28)+' '+(j++); } used.add(n);
-      X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([cols.map(f=>f.label)].concat(list.map(r=>cols.map(f=>r[f.key]==null?'':r[f.key])))),n); }
+      X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([cols.map(f=>f.label).concat(ex.map(x=>x.label))].concat(list.map(r=>cols.map(f=>r[f.key]==null?'':r[f.key]).concat(ex.map(x=>x.get(r)))))),n); }
   }
   const buf=X.write(wb,{bookType:'xlsx',type:'array'});
   try{ await S.downloads.save({filename:'DE_DEI_'+(mode==='filtered'?'results':'all')+'_'+today+'.xlsx',data:new Blob([buf])}); }
@@ -1784,13 +2080,14 @@ async function renameOption(key,oldV,newV){
 }
 
 /* ---------- stats ---------- */
-function workPeriods(){ const m=new Map(); for(const r of activeRows()){ if(!r.work) continue; if(!m.has(r.work)) m.set(r.work,new Map()); const c=m.get(r.work); const p=val(r,'period'); c.set(p,(c.get(p)||0)+1); } const out=new Map(); for(const [w,c] of m){ let best='',bn=-1; for(const [p,n] of c) if(n>bn){ best=p; bn=n; } out.set(w,best); } return out; }
+function workPeriods(){ const m=new Map(); for(const r of countable(activeRows())){ if(!r.work) continue; if(!m.has(r.work)) m.set(r.work,new Map()); const c=m.get(r.work); const p=val(r,'period'); c.set(p,(c.get(p)||0)+1); } const out=new Map(); for(const [w,c] of m){ let best='',bn=-1; for(const [p,n] of c) if(n>bn){ best=p; bn=n; } out.set(w,best); } return out; }
 function orderVals(f,list){ const has=new Map(); for(const r of list){ const v=val(r,f.key); has.set(v,(has.get(v)||0)+1); } const vals=optionsFor(f).filter(v=>has.has(v)); if(has.has('')) vals.push(''); return vals; }
 function renderStats(){
   const sv=$('#statsView');
   if(S.offline||!S.ready){ sv.innerHTML=emptyHTML(S.offline?'offline':'loading'); return; }
-  let list=filtered(null); S.list=list.map(r=>r.id);
-  $('#count').textContent=countText(list.length,scopeRows().length);
+  const shown=filtered(null); S.list=shown.map(r=>r.id);
+  let list=countable(shown); const nTbv=shown.length-list.length;
+  $('#count').textContent=countText(list.length,countable(scopeRows()).length);
   const cats=S.fields.filter(f=>f.type==='cat'&&!SCOPE_KEYS.includes(f.key));
   const rf=F(S.pivot.row)||F('period'), cf=F(S.pivot.col)||F('use');
   if(!S.inclNA) list=list.filter(r=>!(rf.key!=='period'&&isNA(val(r,rf.key)))&&!(cf.key!=='period'&&isNA(val(r,cf.key))));
@@ -1818,14 +2115,14 @@ function renderStats(){
   tsv.push(['Total'].concat(colT.map(String)).concat([String(list.length)]));
   S.copyText=tsv.map(r=>r.join('\t')).join('\n');
   const opt=sel=>cats.map(f=>'<option value="'+esc(f.key)+'"'+(f.key===sel?' selected':'')+'>'+esc(f.label)+'</option>').join('');
-  let h='<div><h2 class="st-h">Cross-tabulation</h2><p class="muted">Based on the '+list.length+' entries in the current results; recalculates whenever Browse or the search changes. Replaces the Summary sheet.</p></div>';
+  let h='<div><h2 class="st-h">Cross-tabulation</h2><p class="muted">Based on the '+list.length+' entries in the current results; recalculates whenever Browse or the search changes. Replaces the Summary sheet.'+(nTbv?' <span class="tbv-note">'+nTbv+' '+(nTbv===1?'entry':'entries')+' to be verified '+(nTbv===1?'is':'are')+' left out of all statistics.</span>':'')+'</p></div>';
   h+='<div class="st-ctl"><label>Rows <select id="pvRow">'+opt(rf.key)+'</select></label><label>Columns <select id="pvCol">'+opt(cf.key)+'</select></label><span class="seg2" role="group" aria-label="Values"><button type="button" data-pm="count" aria-pressed="'+(S.pivot.mode==='count')+'">Count</button><button type="button" data-pm="row" aria-pressed="'+(S.pivot.mode==='row')+'">Row %</button><button type="button" data-pm="per10k" aria-pressed="'+(S.pivot.mode==='per10k')+'"'+(per10kOK?'':' disabled title="Available when rows are Period or Work Title"')+'>Per 10k chars</button></span><label class="chk" for="inclNA2"><input type="checkbox" id="inclNA2"'+(S.inclNA?' checked':'')+'> Include unannotated</label><button type="button" class="btn sm" id="pvCopy">Copy as TSV</button></div>';
   h+='<div id="copyFallback"></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">'+esc(rf.label)+' \\ '+esc(cf.label)+'</th>'+cv.map(v=>'<th'+(naV(v)?' class="na"':'')+'>'+esc(optLabel(cf,v))+'</th>').join('')+'<th>Total</th></tr></thead><tbody>'+tb+'</tbody></table></div>';
-  const works=new Map(); for(const r of activeRows()){ if(r.work&&dsOf(r)==='Main') works.set(r.work,(works.get(r.work)||0)+1); }
+  const works=new Map(); for(const r of countable(activeRows())){ if(r.work&&dsOf(r)==='Main') works.set(r.work,(works.get(r.work)||0)+1); }
   const wl=[...works.keys()].sort((a,b)=>periodKey(wp.get(a))-periodKey(wp.get(b))||coll.compare(a,b));
   let sumC=0,sumN=0;
   const rows=wl.map(w=>{ const n=works.get(w), c=+S.sources[w]||0; sumN+=n; sumC+=c; return '<tr><th class="rh">'+esc(w)+'</th><td class="rh">'+esc(periodShort(wp.get(w)))+'</td><td>'+n+'</td><td>'+(S.writable?'<input type="number" min="0" step="1" data-src="'+esc(w)+'" value="'+(c||'')+'" aria-label="'+esc(w)+' character count">':(c||'—'))+'</td><td>'+(c?(n/c*1e4).toFixed(2):'—')+'</td></tr>'; }).join('');
-  h+='<div><h2 class="st-h">Corpus size</h2><p class="muted">Character counts exclude punctuation and drive the per-10k-character rates. Figures entered so far come from the Summary sheet'+(S.writable?' and can be edited here.':'.')+' Counts cover the Main dataset in both registers, excluding trash.</p></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">Work Title</th><th class="rh">Period</th><th>Entries</th><th>Characters</th><th>Entries per 10k chars</th></tr></thead><tbody>'+(rows||'<tr><td class="rh" colspan="5">No data yet</td></tr>')+'</tbody><tfoot><tr class="tot"><th class="rh">Total</th><td></td><td>'+sumN+'</td><td>'+(sumC||'—')+'</td><td></td></tr></tfoot></table></div>';
+  h+='<div><h2 class="st-h">Corpus size</h2><p class="muted">Character counts exclude punctuation and drive the per-10k-character rates. Figures entered so far come from the Summary sheet'+(S.writable?' and can be edited here.':'.')+' Counts cover the Main dataset in both registers, excluding trash and entries to be verified.</p></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">Work Title</th><th class="rh">Period</th><th>Entries</th><th>Characters</th><th>Entries per 10k chars</th></tr></thead><tbody>'+(rows||'<tr><td class="rh" colspan="5">No data yet</td></tr>')+'</tbody><tfoot><tr class="tot"><th class="rh">Total</th><td></td><td>'+sumN+'</td><td>'+(sumC||'—')+'</td><td></td></tr></tfoot></table></div>';
   const ae=document.activeElement; const keep=ae&&ae.dataset&&ae.dataset.src;
   sv.innerHTML=h;
   if(keep){ const n=sv.querySelector('input[data-src="'+CSS.escape(keep)+'"]'); if(n) n.focus(); }
@@ -1842,6 +2139,7 @@ let qT=0;
 function bind(){
   $('#q').addEventListener('input',e=>{ clearTimeout(qT); qT=setTimeout(()=>{ S.q=e.target.value; S.renderLimit=150; schedule(); },140); });
   $('#hlOnly').addEventListener('change',e=>{ guard(()=>{ S.hlOnly=e.target.checked; S.renderLimit=150; schedule(); }); });
+  $('#tbvOnly').addEventListener('change',e=>{ guard(()=>{ S.tbvOnly=e.target.checked; S.selected.clear(); S.renderLimit=150; schedule(); }); });
   $('#rx').addEventListener('click',()=>{ S.regex=!S.regex; $('#rx').setAttribute('aria-pressed',String(S.regex)); schedule(); });
   $('#anno').addEventListener('change',e=>{ const want=e.target.checked; if(S.dirty){ e.target.checked=S.annotate; } guard(()=>{ S.annotate=want; store.set('annotate',S.annotate); S.selected.clear(); render(); if(S.openId) renderDrawer(); }); });
   $('#bImport').addEventListener('click',openImport);
@@ -1922,6 +2220,9 @@ function bind(){
   // drawer
   const dr=$('#drawer');
   dr.addEventListener('click',e=>{
+    const tb=e.target.closest('.tseg .opt');
+    if(tb&&S.draft){ S.draft.target=S.draft.target===tb.dataset.t?'':tb.dataset.t; onDraftChange(); return; }
+    const op=e.target.closest('[data-open]'); if(op){ openRow(op.dataset.open); return; }
     const opt=e.target.closest('.seg .opt');
     if(opt&&S.draft){ const k=opt.closest('.seg').dataset.k;
       if(opt.dataset.add){ const inp=document.createElement('input'); inp.className='optin'; inp.placeholder='New value, Enter to add'; inp.setAttribute('aria-label','New value'); opt.replaceWith(inp); inp.focus();
@@ -1934,6 +2235,12 @@ function bind(){
     const b=e.target.closest('[data-d]'); if(!b) return; const a=b.dataset.d;
     if(a==='prev') navDrawer(-1); else if(a==='next') navDrawer(1); else if(a==='close') closeDrawer();
     else if(a==='hl'){ const r=S.rows.get(S.openId); if(r){ setHighlight([S.openId],!r.highlight); renderDrawer(); } }
+    else if(a==='verify'){ const id=S.openId; guard(()=>{
+      /* While only entries to be verified are listed, move on to the next one. */
+      const i=S.list.indexOf(id); const nxt=tbvOnly()&&i>=0?(S.list[i+1]||S.list[i-1]):null;
+      setVerified([id],true).then(()=>{ if(S.openId===id) renderDrawer(); });
+      if(nxt&&nxt!==id){ S.list=S.list.filter(x=>x!==id); openRow(nxt); } else renderDrawer(); }); }
+    else if(a==='split') splitEntry(S.openId);
     else if(a==='save') saveOpen();
     else if(a==='revert'){ S.draft=clone(S.orig); S.dirty=false; renderDrawer(); }
     else if(a==='annotate'){ S.annotate=true; store.set('annotate',true); render(); renderDrawer(); }
@@ -1955,6 +2262,7 @@ function bind(){
     if(a==='none'){ S.selected.clear(); render(); }
     else if(a==='apply') bulkApply();
     else if(a==='hl-on'||a==='hl-off') setHighlight([...S.selected],a==='hl-on');
+    else if(a==='vf-on'||a==='vf-off') setVerified([...S.selected],a==='vf-on');
     else if(a==='trash'){ const ids=[...S.selected]; S.selected.clear(); trashIds(ids); render(); }
     else if(a==='restore'){ const ids=[...S.selected]; S.selected.clear(); restoreIds(ids); render(); }
     else if(a==='purge'){ S.bulkConfirm=true; renderBulk(); }
@@ -1967,10 +2275,21 @@ function bind(){
     m.addEventListener('click',e=>{ if(e.target===m){ closeModal(m.id); return; } const x=e.target.closest('[data-x]'); if(!x) return;
       if(x.dataset.x==='close') closeModal(m.id);
       else if(x.dataset.x==='reset'){ resetImport(); renderImport(); }
-      else if(x.dataset.x==='commit') commitImport(); });
+      else if(x.dataset.x==='commit') commitImport();
+      else if(x.dataset.x==='txreset'){ TX.file=null; TX.text=''; TX.stats=null; TX.err=''; renderImport(); }
+      else if(x.dataset.x==='txcommit') commitText(); });
   });
   const ib=$('#impBody');
+  ib.addEventListener('input',e=>{ const t=e.target; if(t.dataset.tx===undefined) return;
+    TX.meta[t.dataset.tx]=t.value;
+    if(t.dataset.tx==='work'&&optionsFor(F('work')).includes(t.value.trim())){ const wm=workMeta(t.value.trim()); for(const k of ['period','register','date']) if(wm[k]&&!TX.meta[k+'Touched']) TX.meta[k]=wm[k]; renderImport(); const w=$('#impBody [data-tx="work"]'); if(w){ w.focus(); w.setSelectionRange(w.value.length,w.value.length); } return; }
+    if(t.dataset.tx!=='work') TX.meta[t.dataset.tx+'Touched']=true;
+    const ready=TX.text&&TX.stats&&TX.stats.de&&TX.meta.work.trim()&&TX.meta.period.trim(); const b=$('#impFoot [data-x="txcommit"]'); if(b) b.disabled=!ready; });
   ib.addEventListener('change',e=>{ const t=e.target;
+    if(t.id==='txtFile'&&t.files&&t.files[0]){ readText(t.files[0]); return; }
+    if(t.dataset.tx!==undefined&&t.tagName==='SELECT'){ TX.meta[t.dataset.tx]=t.value; TX.meta[t.dataset.tx+'Touched']=true; return; }
+    if(t.id==='txModel'){ TX.model=t.value; return; }
+    if(t.id==='txCheck'){ TX.checkOnly=t.checked; renderImport(); return; }
     if(t.id==='impFile'&&t.files&&t.files[0]){ readWorkbook(t.files[0]); return; }
     if(t.dataset.inc!==undefined){ IMP.sheets[+t.dataset.inc].include=t.checked; renderImport(); return; }
     if(t.dataset.reg!==undefined){ IMP.sheets[+t.dataset.reg].register=t.value; renderImport(); return; }
@@ -1980,10 +2299,12 @@ function bind(){
     if(t.name==='dup'){ IMP.dup=t.value; renderImport(); return; }
     if(t.id==='dropS'){ IMP.dropSamples=t.checked; renderImport(); }
   });
-  ib.addEventListener('click',e=>{ const b=e.target.closest('[data-mapt]'); if(b){ const s=IMP.sheets[+b.dataset.mapt]; s.open=!s.open; renderImport(); } });
+  ib.addEventListener('click',e=>{
+    const ch=e.target.closest('[data-imp]'); if(ch){ IMP.mode=ch.dataset.imp; if(IMP.mode==='text'){ for(const k of Object.keys(TX.meta)) if(/Touched$/.test(k)) delete TX.meta[k]; loadPipelineInfo(); } renderImport(); return; }
+    const b=e.target.closest('[data-mapt]'); if(b){ const s=IMP.sheets[+b.dataset.mapt]; s.open=!s.open; renderImport(); } });
   ib.addEventListener('dragover',e=>{ const d=e.target.closest('#drop'); if(d){ e.preventDefault(); d.classList.add('over'); } });
   ib.addEventListener('dragleave',e=>{ const d=e.target.closest('#drop'); if(d) d.classList.remove('over'); });
-  ib.addEventListener('drop',e=>{ const d=e.target.closest('#drop'); if(!d) return; e.preventDefault(); d.classList.remove('over'); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) readWorkbook(f); });
+  ib.addEventListener('drop',e=>{ const d=e.target.closest('#drop'); if(!d) return; e.preventDefault(); d.classList.remove('over'); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f){ if(IMP.mode==='text') readText(f); else readWorkbook(f); } });
 
   const sb=$('#schBody');
   sb.addEventListener('change',async e=>{ const t=e.target; if(t.dataset.show){ const f=F(t.dataset.show); f.show=t.checked; bump(); schedule(); try{ await saveSchema(); }catch(err){ toastErr(err,'Not saved'); } } });
@@ -2025,8 +2346,9 @@ function bind(){
   });
 }
 function clearChip(id){
-  if(id==='all'){ S.facets={}; S.q=''; $('#q').value=''; S.sort=null; S.trash=false; S.hlOnly=false; S.register='Colloquial'; S.dataset='Main'; }
+  if(id==='all'){ S.facets={}; S.q=''; $('#q').value=''; S.sort=null; S.trash=false; S.hlOnly=false; S.tbvOnly=false; S.register='Colloquial'; S.dataset='Main'; }
   else if(id==='hl') S.hlOnly=false;
+  else if(id==='tbv') S.tbvOnly=false;
   else if(id==='q'){ S.q=''; $('#q').value=''; }
   else if(id==='sort') S.sort=null;
   else if(id==='reg') S.register='Colloquial';
