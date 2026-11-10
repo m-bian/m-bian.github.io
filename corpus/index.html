@@ -1749,14 +1749,14 @@ function matchField(label){
 }
 function slug(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,40)||'field'; }
 const IMP={};
-function resetImport(){ Object.assign(IMP,{mode:null,file:null,fileName:'',sheets:[],dup:'skip',dropSamples:true,plan:null,busy:false,done:null,err:''}); TX.file=null; TX.text=''; TX.stats=null; TX.err=''; TX.busy=false; TX.done=null; }
+function resetImport(){ Object.assign(IMP,{mode:null,file:null,fileName:'',sheets:[],dup:'skip',dropSamples:true,plan:null,busy:false,done:null,err:''}); TX.file=null; TX.text=''; TX.stats=null; TX.err=''; TX.busy=false; TX.done=null; TX.additionalInstructions=''; }
 function openImport(){ resetImport(); $('#mImport').hidden=false; renderImport(); }
 
 /* ---------- text for machine annotation ----------
    A plain-text source is committed under sources/ together with a request under requests/. A GitHub Action in this
    repository runs the annotation pipeline (m-bian/diachronic-semantics-workflow) on it and commits the new entries,
    each marked "to be verified". The preview below splits the text with the same rules as the pipeline. */
-const TX={file:null,name:'',text:'',enc:'',stats:null,meta:{work:'',section:'',period:'',register:'Colloquial',dataset:'Main',date:''},model:'',checkOnly:false,busy:false,done:null,err:'',config:undefined,runs:undefined,blobCache:new Map()};
+const TX={file:null,name:'',text:'',enc:'',stats:null,meta:{work:'',section:'',period:'',register:'Colloquial',dataset:'Main',date:''},model:'',additionalInstructions:'',checkOnly:false,busy:false,done:null,err:'',config:undefined,runs:undefined,blobCache:new Map()};
 const HEAD_RE=/^\s*(?:#{1,6}\s*(.+?)\s*#*|(第[一二三四五六七八九十百千零〇两\d]+[回章卷篇节折出][^。！？!?]{0,40}))\s*$/;
 function decodeText(buf){
   const u=new Uint8Array(buf);
@@ -1774,10 +1774,9 @@ function splitSentences(p){
   return out;
 }
 function parseText(text){
-  const lines=text.replace(/\r\n?/g,'\n').split('\n'); let sections=0, paras=0, sents=0, withDE=0, de=0; const sample=[];
-  for(const ln of lines){ if(!ln.trim()) continue; if(HEAD_RE.test(ln)){ sections++; continue; } paras++;
+  const lines=text.replace(/\r\n?/g,'\n').split('\n'); let sections=0, paras=0, sents=0, withDE=0, de=0, han=0; const sample=[];
+  for(const ln of lines){ if(!ln.trim()) continue; if(HEAD_RE.test(ln)){ sections++; continue; } paras++; han+=(ln.match(/[㐀-鿿豈-﫿\u{20000}-\u{3134F}]/gu)||[]).length;
     for(const s of splitSentences(ln)){ sents++; const n=deCount(s); if(n){ withDE++; de+=n; if(sample.length<4) sample.push(s); } } }
-  const han=(text.match(/[㐀-鿿豈-﫿\u{20000}-\u{3134F}]/gu)||[]).length;
   return {sections,paras,sents,withDE,de,han,sample};
 }
 async function loadPipelineInfo(force){
@@ -1809,8 +1808,9 @@ function runsHTML(){
   if(TX.runs===null) return '<p class="muted">Recent runs could not be loaded.</p>';
   if(!TX.runs.length) return '<p class="muted">No text has been submitted yet.</p>';
   return '<ul class="runs">'+TX.runs.map(q=>{ const r=q.result||{}; const st=q.status||'queued';
-    const what=st==='done'?(q.checkOnly?'checked: '+(r.sentences||0)+' sentences, '+(r.de||0)+' 得':'added '+(r.added||0)+(r.duplicates?', '+r.duplicates+' already in the corpus':'')+(r.failed?', '+r.failed+' failed':'')):st==='failed'?esc(q.error||'see the Actions log'):'waiting for the run';
-    return '<li><span class="st '+esc(st)+'">'+esc(st)+'</span><b>'+esc(q.sourceName||q.source||q.id)+'</b><span class="dim">'+esc((q.meta&&q.meta.work)||'')+' · '+esc(fmtTime(q.createdAt))+(q.createdBy?' · @'+esc(q.createdBy):'')+'</span><span>'+what+'</span></li>'; }).join('')+'</ul>';
+    const what=st==='done'?(q.checkOnly?'checked: '+(r.sentences||0)+' sentences, '+(r.de||0)+' 得':'added '+(r.added||0)+(r.duplicates?', '+r.duplicates+' already in the corpus':'')+(r.failed?', '+r.failed+' failed':'')+(r.han!=null?', '+r.han.toLocaleString('en-US')+' text characters':'')+(r.excludedHan?', '+r.excludedHan+' characters excluded':'')):st==='failed'?esc(q.error||'see the Actions log'):'waiting for the run';
+    const notes=q.additionalInstructions?'<details><summary>Upload instructions'+(r.sectionPlan?' and sections':'')+'</summary><p style="white-space:pre-wrap">'+esc(q.additionalInstructions)+'</p>'+(r.sectionPlan?'<ul>'+r.sectionPlan.map(s=>'<li>'+esc(s.originalSection||'(untitled)')+' → '+(s.include?esc(s.section||'(no Section)'):'skipped')+'</li>').join('')+'</ul>':'')+'</details>':'';
+    return '<li><span class="st '+esc(st)+'">'+esc(st)+'</span><b>'+esc(q.sourceName||q.source||q.id)+'</b><span class="dim">'+esc((q.meta&&q.meta.work)||'')+' · '+esc(fmtTime(q.createdAt))+(q.createdBy?' · @'+esc(q.createdBy):'')+'</span><span>'+what+'</span>'+notes+'</li>'; }).join('')+'</ul>';
 }
 function renderTextImport(){
   const bodyEl=$('#impBody'), foot=$('#impFoot');
@@ -1828,7 +1828,7 @@ function renderTextImport(){
     h+='<p class="muted"><b style="color:var(--ink)">'+esc(TX.name)+'</b> · '+esc(TX.enc)+'</p>';
     h+='<div class="txt-stats"><span><b>'+st.de+'</b> 得 in <b>'+st.withDE+'</b> sentences</span><span>'+st.sents+' sentences</span><span>'+st.paras+' paragraphs</span><span>'+st.sections+' section headings</span><span>'+st.han.toLocaleString('en-US')+' Chinese characters</span></div>';
     if(st.sample.length) h+='<p class="txt-prev">'+st.sample.map(s=>hl(s,true,0)).join('<br>')+'</p>';
-    if(!st.de) h+='<p class="err">This text has no 得, so the run would add no entries.</p>';
+    if(!st.de) h+='<p class="muted">This text has no 得. Its text characters will still be added to Corpus size after processing.</p>';
   }
   h+='<div class="txt-grid">'+
     '<label class="lf">Work Title<input data-tx="work" list="dl-twork" value="'+esc(m.work)+'" placeholder="e.g. Xiyouji"></label>'+
@@ -1838,12 +1838,14 @@ function renderTextImport(){
     '<label class="lf">Register<select data-tx="register">'+regs.map(v=>'<option'+(v===m.register?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
     '<label class="lf">Dataset<select data-tx="dataset">'+[...new Set(['Main','hai/ye + DE'].concat(optionsFor(F('dataset'))))].map(v=>'<option'+(v===m.dataset?' selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>'+
     '<label class="lf wide">Models'+(choices.length?'<select id="txModel">'+choices.map(c=>'<option value="'+esc(c.v)+'"'+(c.v===TX.model?' selected':'')+'>'+esc(c.l)+'</option>').join('')+'</select>':'<span class="dim">'+(TX.config===undefined?'Loading the pipeline settings…':'No pipeline.config.json in the repository yet; the run will use its built-in default. See the README, “Machine annotation”.')+'</span>')+'</label>'+
+    '<label class="lf wide" for="txInstructions">Additional instructions <span class="dim">(optional; this upload only)</span><textarea id="txInstructions" rows="4" maxlength="6000" placeholder="E.g. Skip the Preface section. Use chapter numbers only for Section (2, 3, …). Keep personal names in pinyin.">'+esc(TX.additionalInstructions)+'</textarea><span class="dim">Notes for translation, glossing and annotation. Section exclusions and Section labels are applied before processing. These notes are cleared for the next upload.</span></label>'+
     '<label class="chk wide"><input type="checkbox" id="txCheck"'+(TX.checkOnly?' checked':'')+'> Check only: count sentences and 得 on GitHub, without calling a model or adding entries</label>'+
+    (TX.checkOnly?'<p class="muted wide">Check only counts the text as uploaded. Additional instructions and Corpus size updates are applied when you submit for annotation.</p>':'')+
     '</div><datalist id="dl-twork">'+optionsFor(F('work')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist><datalist id="dl-tper">'+optionsFor(F('period')).map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist>';
-  h+='<p class="muted">The pipeline translates each sentence, glosses it word by word and suggests Use of DE, Form and Force for every 得, one entry per 得. Flavor and the other fields are left for annotators. Sentences already in the corpus for this work are skipped.</p>';
+  h+='<p class="muted">The pipeline translates each sentence, glosses it word by word and suggests Use of DE, Form and Force for every 得, one entry per 得. Flavor and the other fields are left for annotators. Existing 得 entries are skipped. After processing, included text characters accumulate under Statistics → Corpus size; uploading the same text again does not count it twice.</p>';
   h+='<div><h3 class="st-h" style="font-size:13px">Recent runs</h3>'+runsHTML()+'</div>';
   bodyEl.innerHTML=h;
-  const ready=TX.text&&st&&st.de&&m.work.trim()&&m.period.trim();
+  const ready=TX.text&&st&&st.paras&&m.work.trim()&&m.period.trim();
   foot.innerHTML='<span class="grow">'+(TX.text&&!ready&&st&&st.de?'Fill in Work Title and Period':'')+'</span>'+(TX.text?'<button type="button" class="btn" data-x="txreset">Choose another file</button>':'<button type="button" class="btn" data-x="reset">Back</button>')+'<button type="button" class="btn zhu" data-x="txcommit"'+(ready?'':' disabled')+'>'+(TX.checkOnly?'Submit for checking':'Submit for annotation')+'</button>';
 }
 async function readText(file){
@@ -1866,7 +1868,7 @@ async function commitText(){
   const id='t'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds())+'-'+Math.random().toString(36).slice(2,6);
   const source=textPath(TX.name,d);
   const meta={work:m.work.trim(),section:m.section.trim(),period:normPeriod(m.period),register:m.register||'Colloquial',dataset:m.dataset||'Main',date:normDate(m.date)};
-  const req={id,createdAt:d.getTime(),createdBy:S.myId||null,status:'queued',source,sourceName:TX.name,encoding:TX.enc,meta,model:TX.model||'',checkOnly:!!TX.checkOnly,preview:{sentences:TX.stats.sents,withDE:TX.stats.withDE,de:TX.stats.de}};
+  const req={id,createdAt:d.getTime(),createdBy:S.myId||null,status:'queued',source,sourceName:TX.name,encoding:TX.enc,meta,model:TX.model||'',additionalInstructions:TX.additionalInstructions.trim(),checkOnly:!!TX.checkOnly,preview:{sentences:TX.stats.sents,withDE:TX.stats.withDE,de:TX.stats.de,han:TX.stats.han}};
   const toB64=s=>bufToB64(new TextEncoder().encode(s));
   const msg=(TX.checkOnly?'Submit text for checking: ':'Submit text for machine annotation: ')+TX.name;
   try{
@@ -2080,7 +2082,7 @@ async function renameOption(key,oldV,newV){
 }
 
 /* ---------- stats ---------- */
-function workPeriods(){ const m=new Map(); for(const r of countable(activeRows())){ if(!r.work) continue; if(!m.has(r.work)) m.set(r.work,new Map()); const c=m.get(r.work); const p=val(r,'period'); c.set(p,(c.get(p)||0)+1); } const out=new Map(); for(const [w,c] of m){ let best='',bn=-1; for(const [p,n] of c) if(n>bn){ best=p; bn=n; } out.set(w,best); } return out; }
+function workPeriods(){ const m=new Map(); for(const r of activeRows()){ if(!r.work||dsOf(r)!=='Main') continue; if(!m.has(r.work)) m.set(r.work,new Map()); const c=m.get(r.work); const p=val(r,'period'); c.set(p,(c.get(p)||0)+1); } const out=new Map(Object.entries(S.metaRemote.sources&&S.metaRemote.sources.periods||{})); for(const [w,c] of m){ let best='',bn=-1; for(const [p,n] of c) if(p&&n>bn){ best=p; bn=n; } if(best) out.set(w,best); } return out; }
 function orderVals(f,list){ const has=new Map(); for(const r of list){ const v=val(r,f.key); has.set(v,(has.get(v)||0)+1); } const vals=optionsFor(f).filter(v=>has.has(v)); if(has.has('')) vals.push(''); return vals; }
 function renderStats(){
   const sv=$('#statsView');
@@ -2118,11 +2120,11 @@ function renderStats(){
   let h='<div><h2 class="st-h">Cross-tabulation</h2><p class="muted">Based on the '+list.length+' entries in the current results; recalculates whenever Browse or the search changes. Replaces the Summary sheet.'+(nTbv?' <span class="tbv-note">'+nTbv+' '+(nTbv===1?'entry':'entries')+' to be verified '+(nTbv===1?'is':'are')+' left out of all statistics.</span>':'')+'</p></div>';
   h+='<div class="st-ctl"><label>Rows <select id="pvRow">'+opt(rf.key)+'</select></label><label>Columns <select id="pvCol">'+opt(cf.key)+'</select></label><span class="seg2" role="group" aria-label="Values"><button type="button" data-pm="count" aria-pressed="'+(S.pivot.mode==='count')+'">Count</button><button type="button" data-pm="row" aria-pressed="'+(S.pivot.mode==='row')+'">Row %</button><button type="button" data-pm="per10k" aria-pressed="'+(S.pivot.mode==='per10k')+'"'+(per10kOK?'':' disabled title="Available when rows are Period or Work Title"')+'>Per 10k chars</button></span><label class="chk" for="inclNA2"><input type="checkbox" id="inclNA2"'+(S.inclNA?' checked':'')+'> Include unannotated</label><button type="button" class="btn sm" id="pvCopy">Copy as TSV</button></div>';
   h+='<div id="copyFallback"></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">'+esc(rf.label)+' \\ '+esc(cf.label)+'</th>'+cv.map(v=>'<th'+(naV(v)?' class="na"':'')+'>'+esc(optLabel(cf,v))+'</th>').join('')+'<th>Total</th></tr></thead><tbody>'+tb+'</tbody></table></div>';
-  const works=new Map(); for(const r of countable(activeRows())){ if(r.work&&dsOf(r)==='Main') works.set(r.work,(works.get(r.work)||0)+1); }
+  const works=new Map(Object.keys(S.sources).map(w=>[w,0])); for(const r of activeRows()){ if(r.work&&dsOf(r)==='Main'){ if(!works.has(r.work)) works.set(r.work,0); if(statRow(r)) works.set(r.work,works.get(r.work)+1); } }
   const wl=[...works.keys()].sort((a,b)=>periodKey(wp.get(a))-periodKey(wp.get(b))||coll.compare(a,b));
   let sumC=0,sumN=0;
   const rows=wl.map(w=>{ const n=works.get(w), c=+S.sources[w]||0; sumN+=n; sumC+=c; return '<tr><th class="rh">'+esc(w)+'</th><td class="rh">'+esc(periodShort(wp.get(w)))+'</td><td>'+n+'</td><td>'+(S.writable?'<input type="number" min="0" step="1" data-src="'+esc(w)+'" value="'+(c||'')+'" aria-label="'+esc(w)+' character count">':(c||'—'))+'</td><td>'+(c?(n/c*1e4).toFixed(2):'—')+'</td></tr>'; }).join('');
-  h+='<div><h2 class="st-h">Corpus size</h2><p class="muted">Character counts exclude punctuation and drive the per-10k-character rates. Figures entered so far come from the Summary sheet'+(S.writable?' and can be edited here.':'.')+' Counts cover the Main dataset in both registers, excluding trash and entries to be verified.</p></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">Work Title</th><th class="rh">Period</th><th>Entries</th><th>Characters</th><th>Entries per 10k chars</th></tr></thead><tbody>'+(rows||'<tr><td class="rh" colspan="5">No data yet</td></tr>')+'</tbody><tfoot><tr class="tot"><th class="rh">Total</th><td></td><td>'+sumN+'</td><td>'+(sumC||'—')+'</td><td></td></tr></tfoot></table></div>';
+  h+='<div><h2 class="st-h">Corpus size</h2><p class="muted">Counts cover the Main dataset in both registers. Text characters accumulate after each upload is processed, including works whose entries are still to be verified; headings, punctuation and excluded sections are left out. Repeated uploads of the same text are counted once. Entry counts and rates use verified entries only, excluding trash.'+(S.writable?' Character totals can be edited here.':'')+'</p></div><div class="tblwrap"><table class="pv"><thead><tr><th class="rh">Work Title</th><th class="rh">Period</th><th>Entries</th><th>Characters</th><th>Entries per 10k chars</th></tr></thead><tbody>'+(rows||'<tr><td class="rh" colspan="5">No data yet</td></tr>')+'</tbody><tfoot><tr class="tot"><th class="rh">Total</th><td></td><td>'+sumN+'</td><td>'+(sumC||'—')+'</td><td></td></tr></tfoot></table></div>';
   const ae=document.activeElement; const keep=ae&&ae.dataset&&ae.dataset.src;
   sv.innerHTML=h;
   if(keep){ const n=sv.querySelector('input[data-src="'+CSS.escape(keep)+'"]'); if(n) n.focus(); }
@@ -2130,7 +2132,7 @@ function renderStats(){
 async function saveSource(w,v){
   const n=Math.max(0,Math.round(+v||0)); if(n) S.sources[w]=n; else delete S.sources[w];
   bump(); schedule();
-  try{ await enqueue({t:'meta',name:'sources',data:{chars:Object.assign({},S.sources),updatedAt:Date.now()},msg:'Update the character count of '+w}); }catch(e){ toastErr(e,'Character count not saved'); }
+  try{ await enqueue({t:'meta',name:'sources',data:Object.assign({},S.metaRemote.sources||{},{chars:Object.assign({},S.sources),updatedAt:Date.now()}),msg:'Update the character count of '+w}); }catch(e){ toastErr(e,'Character count not saved'); }
 }
 function setInclNA(on){ S.inclNA=on; store.set('inclNA',on); schedule(); }
 
@@ -2276,11 +2278,11 @@ function bind(){
       if(x.dataset.x==='close') closeModal(m.id);
       else if(x.dataset.x==='reset'){ resetImport(); renderImport(); }
       else if(x.dataset.x==='commit') commitImport();
-      else if(x.dataset.x==='txreset'){ TX.file=null; TX.text=''; TX.stats=null; TX.err=''; renderImport(); }
+      else if(x.dataset.x==='txreset'){ TX.file=null; TX.text=''; TX.stats=null; TX.err=''; TX.additionalInstructions=''; renderImport(); }
       else if(x.dataset.x==='txcommit') commitText(); });
   });
   const ib=$('#impBody');
-  ib.addEventListener('input',e=>{ const t=e.target; if(t.dataset.tx===undefined) return;
+  ib.addEventListener('input',e=>{ const t=e.target; if(t.id==='txInstructions'){ TX.additionalInstructions=t.value; return; } if(t.dataset.tx===undefined) return;
     TX.meta[t.dataset.tx]=t.value;
     if(t.dataset.tx==='work'&&optionsFor(F('work')).includes(t.value.trim())){ const wm=workMeta(t.value.trim()); for(const k of ['period','register','date']) if(wm[k]&&!TX.meta[k+'Touched']) TX.meta[k]=wm[k]; renderImport(); const w=$('#impBody [data-tx="work"]'); if(w){ w.focus(); w.setSelectionRange(w.value.length,w.value.length); } return; }
     if(t.dataset.tx!=='work') TX.meta[t.dataset.tx+'Touched']=true;
